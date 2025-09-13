@@ -27,8 +27,11 @@ python-dotenv==1.0.0
 aiohttp==3.9.1
 
 # G-P Requirements Implementation Dependencies
-jinja2==3.1.2
-numpy==1.24.3
+# Note: Jinja2 already included above as Flask dependency (3.1.6)
+numpy>=1.25.2
 pdfkit==1.0.0
 python-docx==1.2.0
-openpyxl==3.1.2
+scikit-learn==1.7.2
+pandas>=2.0.0
+joblib>=1.3.0
+scipy>=1.11.0
