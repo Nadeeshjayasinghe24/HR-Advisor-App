@@ -13,7 +13,6 @@ const Login = ({ onLogin }) => {
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -41,8 +40,8 @@ const Login = ({ onLogin }) => {
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register'
       const payload = isLogin 
-        ? { username: formData.username, password: formData.password }
-        : { username: formData.username, email: formData.email, password: formData.password }
+        ? { email: formData.email, password: formData.password }
+        : { email: formData.email, password: formData.password }
 
       const response = await fetch(`https://hr-advisor-app.onrender.com${endpoint}`, {
         method: 'POST',
@@ -206,32 +205,17 @@ const Login = ({ onLogin }) => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="email">Email address</Label>
                 <Input
-                  id="username"
-                  name="username"
-                  type="text"
+                  id="email"
+                  name="email"
+                  type="email"
                   required
-                  value={formData.username}
+                  value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="Enter your username"
+                  placeholder="Enter your email address"
                 />
               </div>
-              
-              {!isLogin && (
-                <div>
-                  <Label htmlFor="email">Email address</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required={!isLogin}
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="Enter your email"
-                  />
-                </div>
-              )}
 
               <div>
                 <Label htmlFor="password">Password</Label>

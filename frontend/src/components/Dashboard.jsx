@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import DailyTips from './DailyTips'
 import { 
   Users, 
   MessageSquare, 
@@ -232,8 +233,14 @@ const Dashboard = ({ onPageChange, token }) => {
               </div>
             )}
           </CardContent>
-        </Card>
+      </div>
 
+      {/* Daily Tips Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <DailyTips />
+        </div>
+        
         <Card>
           <CardHeader>
             <CardTitle>Getting Started</CardTitle>
@@ -250,9 +257,9 @@ const Dashboard = ({ onPageChange, token }) => {
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium">Add your employees</h4>
+                  <h4 className="text-sm font-medium">Add your team</h4>
                   <p className="text-sm text-gray-500">
-                    Start by adding your team members to the system
+                    Start by adding employee information to get personalized advice
                   </p>
                 </div>
               </div>
@@ -264,9 +271,9 @@ const Dashboard = ({ onPageChange, token }) => {
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium">Ask the HR Advisor</h4>
+                  <h4 className="text-sm font-medium">Ask HR questions</h4>
                   <p className="text-sm text-gray-500">
-                    Get country-specific HR advice and templates
+                    Get instant answers to HR policies, compliance, and best practices
                   </p>
                 </div>
               </div>
