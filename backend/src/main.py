@@ -62,6 +62,7 @@ class SubscriptionPlan(db.Model):
         }
 
 class User(db.Model):
+    __tablename__ = 'user'
     user_id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -91,6 +92,7 @@ class User(db.Model):
         }
 
 class PromptHistory(db.Model):
+    __tablename__ = 'prompt_history'
     prompt_id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = db.Column(db.String(36), db.ForeignKey('user.user_id'), nullable=False)
     prompt_text = db.Column(db.Text, nullable=False)
