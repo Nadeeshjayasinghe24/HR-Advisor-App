@@ -76,7 +76,7 @@ const HRAdvisor = ({ token }) => {
     setError('')
 
     try {
-      const response = await fetch(`https://nghki1cje9p6.manus.space/api/hr_advisor/query`, {
+      const response = await fetch(`https://hr-advisor-app.onrender.com/api/hr_advisor/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ const HRAdvisor = ({ token }) => {
     setMessages(prev => [...prev, userMessage])
 
     try {
-      const response = await fetch(`https://nghki1cje9p6.manus.space/api/hr_advisor/template`, {
+      const response = await fetch(`https://hr-advisor-app.onrender.com/api/hr_advisor/template`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

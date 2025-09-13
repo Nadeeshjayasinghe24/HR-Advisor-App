@@ -19,7 +19,7 @@ const Subscription = ({ token, user, onUserUpdate }) => {
     setLoading(true)
     setError('')
     try {
-      const response = await fetch(`https://nghki1cje9p6.manus.space/api/subscriptions`, {
+      const response = await fetch(`https://hr-advisor-app.onrender.com/api/subscriptions`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -42,7 +42,7 @@ const Subscription = ({ token, user, onUserUpdate }) => {
     setError('')
     setUpgradeMessage('')
     try {
-      const response = await fetch(`https://nghki1cje9p6.manus.space/api/subscriptions/upgrade`, {
+      const response = await fetch(`https://hr-advisor-app.onrender.com/api/subscriptions/upgrade`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

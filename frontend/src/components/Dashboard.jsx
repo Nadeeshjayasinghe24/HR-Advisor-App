@@ -29,7 +29,7 @@ const Dashboard = ({ onPageChange, token }) => {
   const fetchDashboardData = async () => {
     try {
       // Fetch subscription info
-      const subResponse = await fetch(`https://nghki1cje9p6.manus.space/api/subscriptions`, {
+      const subResponse = await fetch(`https://hr-advisor-app.onrender.com/api/subscriptions`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -40,7 +40,7 @@ const Dashboard = ({ onPageChange, token }) => {
         setStats(prev => ({ ...prev, subscription: subData }))
       }
       // Fetch recent activity
-      const historyResponse = await fetch(`https://nghki1cje9p6.manus.space/api/history/prompts/recent`, {
+      const historyResponse = await fetch(`https://hr-advisor-app.onrender.com/api/history/prompts/recent`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -53,7 +53,7 @@ const Dashboard = ({ onPageChange, token }) => {
       }
 
       // Fetch employees (for count)
-      const empResponse = await fetch(`http://localhost:5000/api/employees?per_page=1`, {
+      const empResponse = await fetch(`https://hr-advisor-app.onrender.com/api/employees?per_page=1`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
