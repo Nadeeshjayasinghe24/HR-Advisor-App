@@ -1,7 +1,7 @@
 # AnNi AI - Functional Specification Document
 
-**Version:** 1.0  
-**Last Updated:** December 2024  
+**Version:** 1.1  
+**Last Updated:** September 2025  
 **Document Type:** Technical & Functional Specification  
 **Platform:** AnNi AI - HR made simple  
 
@@ -75,6 +75,21 @@ AnNi AI is an intelligent, multi-agent HR management platform designed specifica
 ---
 
 ## 🤖 **Agent System Architecture**
+### Recent Update: Agent system update: Add comprehensive functional specification document and automated documentation agent
+**Date:** 2025-09-13
+**Impact:** High
+
+
+### Recent Update: Agent system update: Fix regex bug in documentation agent
+**Date:** 2025-09-13
+**Impact:** High
+
+
+### Recent Update: Agent system update: Add comprehensive functional specification document and automated documentation agent
+**Date:** 2025-09-13
+**Impact:** High
+
+
 
 ### **1. Multi-LLM Orchestration Agent (Master Agent)**
 
@@ -219,6 +234,10 @@ GOVERNANCE_METRICS = {
 ---
 
 ## 🎯 **Core Features**
+<!-- UI Update: UI component update: Complete rebranding to AnNi AI - HR made simple - 2025-09-13 -->
+
+<!-- UI Update: UI component update: Complete rebranding to AnNi AI - HR made simple - 2025-09-13 -->
+
 
 ### **1. Conversational AI Interface**
 
@@ -800,7 +819,15 @@ ENVIRONMENTS = {
 ## 🏷️ **Version History**
 
 | Version | Date | Changes | Author |
-|---------|------|---------|--------|
+|---------| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+|------| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+|------| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+---|------| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+--|
 | 1.0 | Dec 2024 | Initial functional specification | System |
 | 1.1 | TBD | Feature updates and enhancements | Auto-update |
 
@@ -831,4 +858,342 @@ ENVIRONMENTS = {
 ---
 
 *This document is automatically maintained and updated as AnNi AI evolves. For the latest version, please refer to the GitHub repository.*
+
+
+
+---
+
+## 📚 **APPENDIX A: Technical Configuration & API Keys**
+
+### **🔑 API Keys & Authentication**
+
+#### **Multi-LLM Orchestration Providers**
+
+| Provider | API Key | Usage Limit | Purpose | Status |
+|----------|---------|-------------|---------|--------|
+| **OpenRouter** | `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` | 50 requests/day (FREE) | DeepSeek R1/V3 models for complex reasoning | ✅ Active |
+| **Groq** | `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` | 14,400 requests/day (FREE) | Llama 3.3 70B, Llama 3.1 8B for fast inference | ✅ Active |
+| **OpenAI** | `your_openai_api_key_here` | Pay-per-use | GPT-4, GPT-3.5-turbo for premium features | ⏳ Pending |
+| **Google** | `your_google_api_key_here` | Generous free tier | Gemini Pro/Flash for multimodal tasks | ⏳ Pending |
+| **Anthropic** | `your_anthropic_api_key_here` | Pay-per-use | Claude-3 for safety-critical decisions | ⏳ Pending |
+
+#### **Authentication & Security**
+
+| Component | Key/Token | Purpose |
+|-----------|-----------|---------|
+| **Flask Secret Key** | `anni-ai-hr-made-simple-secret-key-2025` | Session management and CSRF protection |
+| **JWT Secret Key** | `anni-ai-jwt-secret-key-hr-platform` | JSON Web Token signing and verification |
+| **Google OAuth** | Client ID/Secret (configured separately) | Single Sign-On authentication |
+
+### **🌐 Deployment URLs & Endpoints**
+
+#### **Production Deployment**
+
+| Service | URL | Status | Purpose |
+|---------|-----|--------|---------|
+| **Frontend (Vercel)** | `https://hr-advisor-app.vercel.app` | 🟢 Live | React application hosting |
+| **Backend (Render)** | `https://hr-advisor-backend.onrender.com` | 🟢 Live | Flask API server |
+| **Database** | SQLite (local to backend) | 🟢 Active | Employee and user data storage |
+
+#### **API Endpoints**
+
+| Endpoint | Method | Purpose | Authentication |
+|----------|--------|---------|----------------|
+| `/api/auth/login` | POST | User authentication | None |
+| `/api/auth/register` | POST | User registration | None |
+| `/api/auth/google` | POST | Google OAuth login | None |
+| `/api/employees` | GET/POST/PUT/DELETE | Employee management | JWT Required |
+| `/api/hr-advisor` | POST | AI-powered HR queries | JWT Required |
+| `/api/analytics` | GET | HR analytics data | JWT Required |
+| `/api/workflows` | GET/POST | Workflow automation | JWT Required |
+| `/api/documents` | POST | Document generation | JWT Required |
+| `/api/governance` | GET | AI governance metrics | JWT Required |
+
+#### **Development URLs**
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| **Local Frontend** | `http://localhost:5173` | Vite development server |
+| **Local Backend** | `http://localhost:5000` | Flask development server |
+| **Local Database** | `sqlite:///hr_advisor.db` | SQLite database file |
+
+### **🛠️ Complete Technology Stack**
+
+#### **Frontend Architecture**
+
+| Technology | Version | Purpose | Configuration |
+|------------|---------|---------|---------------|
+| **React** | 18.2.0 | UI framework | Created with Vite template |
+| **Vite** | 4.4.5 | Build tool and dev server | Hot reload, fast builds |
+| **Tailwind CSS** | 3.3.0 | Utility-first styling | Custom color palette, responsive design |
+| **Shadcn/UI** | Latest | Component library | Pre-built accessible components |
+| **Lucide React** | Latest | Icon library | Consistent iconography |
+| **Recharts** | 2.7.2 | Data visualization | HR analytics charts and graphs |
+| **Axios** | 1.5.0 | HTTP client | API communication with backend |
+
+**Frontend File Structure:**
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── ui/           # Shadcn/UI components
+│   │   ├── Login.jsx     # Authentication
+│   │   ├── Dashboard.jsx # Main dashboard
+│   │   ├── SimplifiedDashboard.jsx # UX-optimized dashboard
+│   │   ├── ConversationalAI.jsx # AI chat interface
+│   │   ├── EmployeeManagement.jsx # Employee CRUD
+│   │   ├── EmployeeTable.jsx # Data table with sorting/search
+│   │   ├── HRAnalyticsDashboard.jsx # Analytics visualization
+│   │   ├── DailyTips.jsx # HR tips feature
+│   │   └── Layout.jsx    # Common layout wrapper
+│   ├── lib/
+│   │   └── utils.js      # Utility functions
+│   └── App.jsx           # Main application component
+├── public/               # Static assets
+└── package.json          # Dependencies and scripts
+```
+
+#### **Backend Architecture**
+
+| Technology | Version | Purpose | Configuration |
+|------------|---------|---------|---------------|
+| **Flask** | 2.3.3 | Web framework | CORS enabled, JSON responses |
+| **SQLAlchemy** | 2.0.21 | ORM and database toolkit | SQLite database, model definitions |
+| **Flask-JWT-Extended** | 4.5.3 | JWT authentication | Token-based auth with refresh |
+| **Flask-CORS** | 4.0.0 | Cross-origin requests | Allow all origins for development |
+| **Bcrypt** | 4.0.1 | Password hashing | Secure password storage |
+| **Requests** | 2.31.0 | HTTP client | External API calls |
+| **Python-dotenv** | 1.0.0 | Environment variables | Configuration management |
+
+**Backend File Structure:**
+```
+backend/
+├── src/
+│   ├── main.py                    # Flask application entry point
+│   ├── llm_orchestrator.py       # Multi-LLM coordination
+│   ├── ai_governance_agent.py    # AI usage governance
+│   ├── workflow_automation_agent.py # Process automation
+│   ├── document_generation_agent.py # Document creation
+│   ├── predictive_analytics_agent.py # Workforce predictions
+│   ├── proactive_compliance_agent.py # Compliance monitoring
+│   ├── documentation_agent.py    # Auto-documentation
+│   ├── documentation_scheduler.py # Scheduled doc updates
+│   └── models/
+│       └── employee.py           # Employee data model
+├── requirements.txt              # Python dependencies
+└── .env                         # Environment configuration
+```
+
+#### **Database Schema**
+
+| Table | Purpose | Key Fields |
+|-------|---------|------------|
+| **users** | User authentication | id, email, password_hash, role, created_at |
+| **employees** | Employee records | employee_id, first_name, last_name, email, position, department, hire_date, salary, country, performance_rating, engagement_score |
+| **ai_usage_logs** | AI governance tracking | log_id, user_id, operation_type, provider_used, query_hash, response_time, confidence_score |
+| **workflows** | Process automation | workflow_id, name, type, status, created_by, steps, automation_level |
+| **documents** | Generated documents | doc_id, type, employee_id, content, created_at, version |
+
+### **🤖 AI Provider Integration Details**
+
+#### **Multi-LLM Orchestration Strategy**
+
+| Provider | Models Used | Specialization | Request Routing Logic |
+|----------|-------------|----------------|----------------------|
+| **DeepSeek (OpenRouter)** | R1, V3 | Complex reasoning, legal analysis | Legal queries, policy interpretation |
+| **Groq** | Llama 3.3 70B, Llama 3.1 8B | Fast inference, general HR | Quick responses, employee queries |
+| **Together AI** | Llama 3.2 11B | Unlimited free tier | High-volume processing |
+| **OpenAI** | GPT-4, GPT-3.5-turbo | Premium quality | Critical decisions, complex analysis |
+| **Google** | Gemini Pro/Flash | Multimodal, document analysis | Document processing, image analysis |
+| **Anthropic** | Claude-3 Sonnet/Haiku | Safety-critical decisions | Compliance, sensitive HR matters |
+
+#### **Provider Selection Algorithm**
+
+```python
+def select_ai_provider(query_type, complexity, urgency, user_tier):
+    if query_type == "legal_compliance":
+        return "deepseek"  # Best reasoning capabilities
+    elif urgency == "high" and complexity == "low":
+        return "groq"      # Fastest response time
+    elif user_tier == "premium":
+        return "openai"    # Highest quality
+    elif query_type == "document_analysis":
+        return "google"    # Multimodal capabilities
+    else:
+        return "together"  # Free unlimited usage
+```
+
+### **🔄 Workflow Automation Configuration**
+
+#### **Automated Processes**
+
+| Workflow Type | Trigger | Steps | Automation Level |
+|---------------|---------|-------|------------------|
+| **Employee Onboarding** | New hire created | Welcome email → Document collection → Training schedule → Buddy assignment | 90% automated |
+| **Performance Review** | Quarterly schedule | Self-assessment → Peer feedback → Manager review → Goal setting | 75% automated |
+| **Compliance Audit** | Policy changes | Data collection → Gap analysis → Risk assessment → Action plan | 60% automated |
+| **Offboarding** | Employee termination | Access revocation → Document collection → Exit interview → Final pay | 80% automated |
+
+#### **Document Generation Templates**
+
+| Document Type | Template Source | Customization Fields | Legal Compliance |
+|---------------|----------------|---------------------|------------------|
+| **Employment Contract** | Country-specific templates | Name, position, salary, start date, benefits | ✅ 13 countries |
+| **Performance Review** | Standardized forms | Goals, ratings, feedback, development plans | ✅ Best practices |
+| **Policy Documents** | Legal requirement templates | Company info, local laws, effective dates | ✅ Regulatory compliance |
+| **Training Materials** | Role-based templates | Position requirements, skills, procedures | ✅ Industry standards |
+
+### **📊 Analytics & Monitoring Configuration**
+
+#### **HR Analytics Metrics**
+
+| Category | Metrics Tracked | Data Sources | Update Frequency |
+|----------|----------------|--------------|------------------|
+| **Workforce Overview** | Headcount, growth trends, demographics | Employee database | Real-time |
+| **Performance Analytics** | Ratings distribution, top performers, improvement areas | Performance reviews | Monthly |
+| **Retention & Engagement** | Turnover rates, retention risk, engagement scores | Employee surveys, exit data | Weekly |
+| **Compliance Monitoring** | Policy adherence, training completion, audit readiness | Workflow logs, training records | Daily |
+
+#### **AI Governance Metrics**
+
+| Metric | Purpose | Tracking Method | Alert Thresholds |
+|--------|---------|----------------|------------------|
+| **Response Accuracy** | Quality assurance | Human validation feedback | <85% accuracy |
+| **Bias Detection** | Fairness monitoring | Demographic analysis of recommendations | Bias score >0.3 |
+| **System Reliability** | Uptime monitoring | Error rates, response times | >5% error rate |
+| **Usage Patterns** | Adoption tracking | Query logs, user engagement | Unusual spikes |
+
+### **🔐 Security & Compliance Configuration**
+
+#### **Data Protection Measures**
+
+| Component | Security Method | Implementation |
+|-----------|----------------|----------------|
+| **Password Storage** | Bcrypt hashing | Salt rounds: 12 |
+| **API Authentication** | JWT tokens | 24-hour expiry, refresh tokens |
+| **Database Encryption** | SQLite encryption | File-level encryption |
+| **API Communication** | HTTPS/TLS | SSL certificates, secure headers |
+| **Data Anonymization** | PII masking | Sensitive data hashing |
+
+#### **Compliance Standards**
+
+| Regulation | Coverage | Implementation Status |
+|------------|----------|----------------------|
+| **GDPR** | EU data protection | ✅ Data consent, right to deletion |
+| **PDPA** | Singapore/Malaysia privacy | ✅ Data minimization, consent |
+| **CCPA** | California privacy | ✅ Data transparency, opt-out |
+| **SOX** | Financial compliance | ⏳ Audit trails, data integrity |
+| **ISO 27001** | Information security | ⏳ Security management system |
+
+### **🚀 Deployment & DevOps Configuration**
+
+#### **CI/CD Pipeline**
+
+| Stage | Tool | Configuration | Trigger |
+|-------|-----|---------------|---------|
+| **Source Control** | GitHub | Private repository | Code commits |
+| **Frontend Build** | Vercel | Automatic deployment | Main branch push |
+| **Backend Deploy** | Render | Docker container | Main branch push |
+| **Database Migration** | SQLAlchemy | Automatic schema updates | Model changes |
+| **Monitoring** | Built-in logging | Error tracking, performance metrics | Continuous |
+
+#### **Environment Variables**
+
+| Variable | Purpose | Example Value |
+|----------|---------|---------------|
+| `OPENROUTER_API_KEY` | DeepSeek model access | `sk-or-v1-...` |
+| `GROQ_API_KEY` | Llama model access | `gsk_...` |
+| `SECRET_KEY` | Flask session security | `anni-ai-hr-...` |
+| `JWT_SECRET_KEY` | Token signing | `anni-ai-jwt-...` |
+| `SQLALCHEMY_DATABASE_URI` | Database connection | `sqlite:///hr_advisor.db` |
+
+### **📈 Performance & Scaling Configuration**
+
+#### **Current Capacity**
+
+| Component | Current Limit | Scaling Strategy |
+|-----------|---------------|------------------|
+| **Frontend** | Unlimited (Vercel) | Global CDN, automatic scaling |
+| **Backend** | 512MB RAM (Render) | Horizontal scaling, load balancing |
+| **Database** | SQLite file | Migration to PostgreSQL for scale |
+| **AI Providers** | 14,400 requests/day | Multiple provider fallback |
+
+#### **Monitoring & Alerts**
+
+| Metric | Threshold | Alert Method |
+|--------|-----------|--------------|
+| **Response Time** | >2 seconds | Email notification |
+| **Error Rate** | >5% | Slack alert |
+| **API Quota** | >80% usage | Dashboard warning |
+| **Database Size** | >100MB | Migration recommendation |
+
+### **🔧 Development & Maintenance**
+
+#### **Local Development Setup**
+
+```bash
+# Frontend setup
+cd frontend
+npm install
+npm run dev  # Starts on http://localhost:5173
+
+# Backend setup
+cd backend
+pip install -r requirements.txt
+python src/main.py  # Starts on http://localhost:5000
+```
+
+#### **Automated Documentation System**
+
+| Component | Purpose | Schedule |
+|-----------|---------|----------|
+| **Documentation Agent** | Auto-update functional spec | On code changes |
+| **Documentation Scheduler** | Scheduled updates | Every 30 minutes |
+| **Backup System** | Version control | Before each update |
+
+#### **Testing Strategy**
+
+| Test Type | Coverage | Tools |
+|-----------|----------|-------|
+| **Unit Tests** | Individual functions | pytest (backend), Jest (frontend) |
+| **Integration Tests** | API endpoints | Postman collections |
+| **E2E Tests** | User workflows | Playwright |
+| **Performance Tests** | Load testing | Artillery.js |
+
+---
+
+## 📚 **APPENDIX B: Version History & Change Log**
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+| 1.0 | Dec 2024 | Initial comprehensive specification | Development Team |
+
+---
+
+## 📚 **APPENDIX C: Support & Maintenance**
+
+### **Support Contacts**
+
+| Role | Contact | Responsibility |
+|------|---------|----------------|
+| **Technical Lead** | development@anni-ai.com | Architecture, API issues |
+| **Product Manager** | product@anni-ai.com | Feature requests, roadmap |
+| **DevOps** | devops@anni-ai.com | Deployment, infrastructure |
+| **Support** | support@anni-ai.com | User issues, documentation |
+
+### **Maintenance Schedule**
+
+| Task | Frequency | Next Due |
+|------|-----------|----------|
+| **Security Updates** | Monthly | Next month |
+| **Dependency Updates** | Quarterly | Q1 2025 |
+| **Performance Review** | Bi-annually | H1 2025 |
+| **Architecture Review** | Annually | 2025 |
+
+---
+
+**Document End**
+
+*This functional specification is automatically maintained by the AnNi AI Documentation Agent and updated whenever code changes are detected.*
 
