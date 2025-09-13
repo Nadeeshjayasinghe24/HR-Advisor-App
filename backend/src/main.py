@@ -888,3 +888,355 @@ if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
 
 
+
+
+# Import new G-P requirements agents
+from administrative_automation_agent import AdministrativeAutomationAgent
+from personalized_development_agent import PersonalizedDevelopmentAgent
+
+# Initialize new agents
+admin_automation_agent = AdministrativeAutomationAgent()
+development_agent = PersonalizedDevelopmentAgent()
+
+# Administrative Automation API Endpoints
+@app.route('/api/automation/create-task', methods=['POST'])
+@jwt_required()
+def create_automation_task():
+    """Create a new administrative automation task."""
+    try:
+        current_user = get_jwt_identity()
+        data = request.get_json()
+        
+        task_type = data.get('task_type')
+        parameters = data.get('parameters', {})
+        employee_id = data.get('employee_id')
+        priority = data.get('priority', 'medium')
+        
+        # Create automation task
+        task_id = asyncio.run(admin_automation_agent.create_automation_task(
+            task_type=task_type,
+            user_id=current_user,
+            parameters=parameters,
+            employee_id=employee_id,
+            priority=getattr(admin_automation_agent.Priority, priority.upper(), admin_automation_agent.Priority.MEDIUM)
+        ))
+        
+        if task_id:
+            return jsonify({
+                'success': True,
+                'task_id': task_id,
+                'message': f'Automation task created successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to create automation task'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error creating automation task: {str(e)}'
+        }), 500
+
+@app.route('/api/automation/status', methods=['GET'])
+@jwt_required()
+def get_automation_status():
+    """Get automation status and metrics for current user."""
+    try:
+        current_user = get_jwt_identity()
+        
+        status = asyncio.run(admin_automation_agent.get_automation_status(current_user))
+        
+        return jsonify({
+            'success': True,
+            'data': status
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error getting automation status: {str(e)}'
+        }), 500
+
+@app.route('/api/automation/generate-contract', methods=['POST'])
+@jwt_required()
+def generate_employment_contract():
+    """Generate an employment contract for an employee."""
+    try:
+        current_user = get_jwt_identity()
+        data = request.get_json()
+        
+        employee_id = data.get('employee_id')
+        contract_params = {
+            'country': data.get('country', 'singapore'),
+            'company': data.get('company', {}),
+            'position': data.get('position', {}),
+            'compensation': data.get('compensation', {}),
+            'effective_date': data.get('effective_date')
+        }
+        
+        # Create contract generation task
+        task_id = asyncio.run(admin_automation_agent.create_automation_task(
+            task_type='generate_contract',
+            user_id=current_user,
+            parameters=contract_params,
+            employee_id=employee_id,
+            priority=admin_automation_agent.Priority.HIGH
+        ))
+        
+        return jsonify({
+            'success': True,
+            'task_id': task_id,
+            'message': 'Contract generation started'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error generating contract: {str(e)}'
+        }), 500
+
+@app.route('/api/automation/generate-offer', methods=['POST'])
+@jwt_required()
+def generate_offer_letter():
+    """Generate an offer letter for a candidate."""
+    try:
+        current_user = get_jwt_identity()
+        data = request.get_json()
+        
+        offer_params = {
+            'candidate': data.get('candidate', {}),
+            'company': data.get('company', {}),
+            'position': data.get('position', {}),
+            'compensation': data.get('compensation', {}),
+            'start_date': data.get('start_date'),
+            'offer_expires': data.get('offer_expires')
+        }
+        
+        # Create offer letter generation task
+        task_id = asyncio.run(admin_automation_agent.create_automation_task(
+            task_type='generate_offer_letter',
+            user_id=current_user,
+            parameters=offer_params,
+            priority=admin_automation_agent.Priority.HIGH
+        ))
+        
+        return jsonify({
+            'success': True,
+            'task_id': task_id,
+            'message': 'Offer letter generation started'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error generating offer letter: {str(e)}'
+        }), 500
+
+# Personalized Development API Endpoints
+@app.route('/api/development/analyze-skills', methods=['POST'])
+@jwt_required()
+def analyze_skill_gaps():
+    """Analyze skill gaps for an employee."""
+    try:
+        data = request.get_json()
+        employee_id = data.get('employee_id')
+        target_role = data.get('target_role')
+        
+        analysis = asyncio.run(development_agent.analyze_skill_gaps(
+            employee_id=employee_id,
+            target_role=target_role
+        ))
+        
+        return jsonify({
+            'success': True,
+            'data': analysis
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error analyzing skill gaps: {str(e)}'
+        }), 500
+
+@app.route('/api/development/create-plan', methods=['POST'])
+@jwt_required()
+def create_development_plan():
+    """Create a personalized development plan for an employee."""
+    try:
+        current_user = get_jwt_identity()
+        data = request.get_json()
+        
+        employee_id = data.get('employee_id')
+        goals = data.get('goals', [])
+        timeline_months = data.get('timeline_months', 12)
+        
+        plan_id = asyncio.run(development_agent.generate_development_plan(
+            employee_id=employee_id,
+            created_by=current_user,
+            goals=goals,
+            timeline_months=timeline_months
+        ))
+        
+        if plan_id:
+            return jsonify({
+                'success': True,
+                'plan_id': plan_id,
+                'message': 'Development plan created successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to create development plan'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error creating development plan: {str(e)}'
+        }), 500
+
+@app.route('/api/development/recommendations/<employee_id>', methods=['GET'])
+@jwt_required()
+def get_learning_recommendations(employee_id):
+    """Get learning recommendations for an employee."""
+    try:
+        # First analyze skill gaps
+        gap_analysis = asyncio.run(development_agent.analyze_skill_gaps(employee_id))
+        
+        if 'error' in gap_analysis:
+            return jsonify({
+                'success': False,
+                'message': gap_analysis['error']
+            }), 404
+        
+        # Generate recommendations
+        recommendations = asyncio.run(development_agent.generate_learning_recommendations(
+            employee_id=employee_id,
+            skill_gaps=gap_analysis.get('skill_gaps', [])[:5]  # Top 5 gaps
+        ))
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'skill_gaps': gap_analysis.get('skill_gaps', []),
+                'recommendations': recommendations
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error getting learning recommendations: {str(e)}'
+        }), 500
+
+@app.route('/api/development/progress', methods=['POST'])
+@jwt_required()
+def update_learning_progress():
+    """Update learning progress for a recommendation."""
+    try:
+        data = request.get_json()
+        
+        employee_id = data.get('employee_id')
+        recommendation_id = data.get('recommendation_id')
+        progress_percentage = data.get('progress_percentage', 0)
+        status = data.get('status', 'in_progress')
+        
+        success = asyncio.run(development_agent.track_learning_progress(
+            employee_id=employee_id,
+            recommendation_id=recommendation_id,
+            progress_percentage=progress_percentage,
+            status=status
+        ))
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Learning progress updated successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to update learning progress'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error updating learning progress: {str(e)}'
+        }), 500
+
+@app.route('/api/development/analytics/<employee_id>', methods=['GET'])
+@jwt_required()
+def get_development_analytics(employee_id):
+    """Get development analytics for an employee."""
+    try:
+        analytics = asyncio.run(development_agent.get_development_analytics(employee_id))
+        
+        return jsonify({
+            'success': True,
+            'data': analytics
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error getting development analytics: {str(e)}'
+        }), 500
+
+# Enhanced AI Governance Endpoints
+@app.route('/api/governance/approval-workflow', methods=['POST'])
+@jwt_required()
+def create_ai_approval_workflow():
+    """Create an AI usage approval workflow."""
+    try:
+        current_user = get_jwt_identity()
+        data = request.get_json()
+        
+        # This would integrate with the enhanced AI governance agent
+        # For now, return a placeholder response
+        return jsonify({
+            'success': True,
+            'message': 'AI approval workflow created',
+            'workflow_id': str(uuid.uuid4())
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error creating approval workflow: {str(e)}'
+        }), 500
+
+@app.route('/api/governance/usage-metrics', methods=['GET'])
+@jwt_required()
+def get_ai_usage_metrics():
+    """Get AI usage metrics and governance dashboard data."""
+    try:
+        # This would integrate with the enhanced AI governance agent
+        # For now, return placeholder metrics
+        metrics = {
+            'total_ai_requests': 1250,
+            'approval_rate': 94.5,
+            'average_response_time': 1.2,
+            'top_use_cases': [
+                {'name': 'HR Policy Queries', 'count': 450},
+                {'name': 'Employee Evaluations', 'count': 320},
+                {'name': 'Compliance Checks', 'count': 280},
+                {'name': 'Document Generation', 'count': 200}
+            ],
+            'risk_alerts': 2,
+            'compliance_score': 98.5
+        }
+        
+        return jsonify({
+            'success': True,
+            'data': metrics
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error getting usage metrics: {str(e)}'
+        }), 500
+

@@ -25,3 +25,7 @@ requests==2.31.0
 beautifulsoup4==4.12.2
 python-dotenv==1.0.0
 aiohttp==3.9.1
+
+# G-P Requirements Implementation Dependencies
+jinja2==3.1.2
+numpy==1.24.3

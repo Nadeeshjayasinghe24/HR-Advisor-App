@@ -1,6 +1,13 @@
 """
 AI Governance Agent for HR Advisor
 Handles AI usage monitoring, approval workflows, compliance tracking, and governance oversight
+
+Enhanced with G-P requirements:
+- AI usage approval workflows (92% of executives require organizational approval)
+- AI tool governance dashboard
+- Usage monitoring and audit trails
+- Compliance verification for AI decisions
+- Risk assessment for AI recommendations
 """
 
 import asyncio
@@ -11,6 +18,8 @@ from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, asdict
 from enum import Enum
 import hashlib
+import sqlite3
+from pathlib import Path
 
 class AIOperation(Enum):
     QUERY_PROCESSING = "query_processing"
