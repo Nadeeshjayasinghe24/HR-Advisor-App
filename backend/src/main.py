@@ -70,6 +70,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     coins = db.Column(db.Integer, default=100)
     country_context = db.Column(db.String(10), default='US')
+    google_id = db.Column(db.String(100), nullable=True)  # For Google OAuth
     
     # New subscription fields
     subscription_plan_id = db.Column(db.Integer, db.ForeignKey('subscription_plan.id'), default=1) # Default to Free plan
@@ -202,6 +203,69 @@ def login():
             
     except Exception as e:
         return jsonify({'error': f'Login failed: {str(e)}'}), 500
+
+@app.route('/api/auth/google', methods=['POST'])
+def google_auth():
+    try:
+        data = request.get_json()
+        
+        if not data or not data.get('google_id') or not data.get('email'):
+            return jsonify({'error': 'Missing Google authentication data'}), 400
+        
+        google_id = data['google_id']
+        email = data['email']
+        name = data.get('name', '')
+        picture = data.get('picture', '')
+        
+        # Check if user already exists with this email
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            # User exists, update Google ID if not set and log them in
+            if not hasattr(user, 'google_id') or not user.google_id:
+                user.google_id = google_id
+                db.session.commit()
+            
+            access_token = create_access_token(identity=user.user_id)
+            return jsonify({
+                'message': 'Login successful',
+                'access_token': access_token,
+                'user': user.to_dict()
+            })
+        else:
+            # Create new user with Google data
+            # Generate username from email or name
+            username = email.split('@')[0]
+            counter = 1
+            original_username = username
+            
+            # Ensure username is unique
+            while User.query.filter_by(username=username).first():
+                username = f"{original_username}{counter}"
+                counter += 1
+            
+            user = User(
+                username=username,
+                email=email,
+                password_hash=generate_password_hash(google_id),  # Use Google ID as password hash
+                google_id=google_id
+            )
+            
+            db.session.add(user)
+            db.session.commit()
+            
+            # Create access token
+            access_token = create_access_token(identity=user.user_id)
+            
+            return jsonify({
+                'message': 'User created successfully',
+                'access_token': access_token,
+                'user': user.to_dict()
+            }), 201
+            
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Google authentication failed: {str(e)}'}), 500
 
 @app.route('/api/user/profile', methods=['GET'])
 @jwt_required()
