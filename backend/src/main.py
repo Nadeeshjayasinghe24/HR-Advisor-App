@@ -115,6 +115,41 @@ class PromptHistory(db.Model):
             'prompt_type': self.prompt_type
         }
 
+class Employee(db.Model):
+    __tablename__ = 'employee'
+    employee_id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = db.Column(db.String(36), db.ForeignKey('user.user_id'), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=False)
+    phone = db.Column(db.String(50), nullable=True)
+    position = db.Column(db.String(255), nullable=True)
+    department = db.Column(db.String(255), nullable=True)
+    hire_date = db.Column(db.Date, nullable=True)
+    salary = db.Column(db.Float, nullable=True)
+    status = db.Column(db.String(50), default='active')
+    address = db.Column(db.Text, nullable=True)
+    emergency_contact = db.Column(db.String(255), nullable=True)
+    emergency_phone = db.Column(db.String(50), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'employee_id': self.employee_id,
+            'user_id': self.user_id,
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'position': self.position,
+            'department': self.department,
+            'hire_date': self.hire_date.isoformat() if self.hire_date else None,
+            'salary': self.salary,
+            'status': self.status,
+            'address': self.address,
+            'emergency_contact': self.emergency_contact,
+            'emergency_phone': self.emergency_phone,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
 # Initialize database on startup
 init_database()
 
@@ -558,10 +593,181 @@ def upgrade_subscription():
 def get_employees():
     try:
         user_id = get_jwt_identity()
-        # For now, return a mock response or empty list as employee management is not implemented
-        return jsonify({'employees': []})
+        
+        # Get pagination parameters
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 50, type=int)
+        
+        # Get all employees for this user
+        employees_query = Employee.query.filter_by(user_id=user_id)
+        employees = employees_query.paginate(
+            page=page, 
+            per_page=per_page, 
+            error_out=False
+        )
+        
+        return jsonify({
+            'employees': [emp.to_dict() for emp in employees.items],
+            'total': employees.total,
+            'pages': employees.pages,
+            'current_page': page
+        })
+        
     except Exception as e:
         return jsonify({'error': f'Failed to get employees: {str(e)}'}), 500
+
+@app.route('/api/employees', methods=['POST'])
+@jwt_required()
+def add_employee():
+    try:
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        
+        if not data or not data.get('name') or not data.get('email'):
+            return jsonify({'error': 'Name and email are required'}), 400
+        
+        # Check if employee with this email already exists for this user
+        existing_employee = Employee.query.filter_by(
+            user_id=user_id, 
+            email=data['email']
+        ).first()
+        
+        if existing_employee:
+            return jsonify({'error': 'Employee with this email already exists'}), 400
+        
+        # Create new employee
+        employee = Employee(
+            user_id=user_id,
+            name=data['name'],
+            email=data['email'],
+            phone=data.get('phone'),
+            position=data.get('position'),
+            department=data.get('department'),
+            hire_date=datetime.strptime(data['hire_date'], '%Y-%m-%d').date() if data.get('hire_date') else None,
+            salary=float(data['salary']) if data.get('salary') else None,
+            status=data.get('status', 'active'),
+            address=data.get('address'),
+            emergency_contact=data.get('emergency_contact'),
+            emergency_phone=data.get('emergency_phone')
+        )
+        
+        db.session.add(employee)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Employee added successfully',
+            'employee': employee.to_dict()
+        }), 201
+        
+    except ValueError as e:
+        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Failed to add employee: {str(e)}'}), 500
+
+@app.route('/api/employees/<employee_id>', methods=['GET'])
+@jwt_required()
+def get_employee(employee_id):
+    try:
+        user_id = get_jwt_identity()
+        
+        employee = Employee.query.filter_by(
+            employee_id=employee_id,
+            user_id=user_id
+        ).first()
+        
+        if not employee:
+            return jsonify({'error': 'Employee not found'}), 404
+        
+        return jsonify({'employee': employee.to_dict()})
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to get employee: {str(e)}'}), 500
+
+@app.route('/api/employees/<employee_id>', methods=['PUT'])
+@jwt_required()
+def update_employee(employee_id):
+    try:
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        
+        employee = Employee.query.filter_by(
+            employee_id=employee_id,
+            user_id=user_id
+        ).first()
+        
+        if not employee:
+            return jsonify({'error': 'Employee not found'}), 404
+        
+        # Check if email is being changed and if it conflicts
+        if data.get('email') and data['email'] != employee.email:
+            existing_employee = Employee.query.filter_by(
+                user_id=user_id,
+                email=data['email']
+            ).first()
+            
+            if existing_employee:
+                return jsonify({'error': 'Employee with this email already exists'}), 400
+        
+        # Update employee fields
+        if data.get('name'):
+            employee.name = data['name']
+        if data.get('email'):
+            employee.email = data['email']
+        if 'phone' in data:
+            employee.phone = data['phone']
+        if 'position' in data:
+            employee.position = data['position']
+        if 'department' in data:
+            employee.department = data['department']
+        if data.get('hire_date'):
+            employee.hire_date = datetime.strptime(data['hire_date'], '%Y-%m-%d').date()
+        if 'salary' in data:
+            employee.salary = float(data['salary']) if data['salary'] else None
+        if 'status' in data:
+            employee.status = data['status']
+        if 'address' in data:
+            employee.address = data['address']
+        if 'emergency_contact' in data:
+            employee.emergency_contact = data['emergency_contact']
+        if 'emergency_phone' in data:
+            employee.emergency_phone = data['emergency_phone']
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Employee updated successfully',
+            'employee': employee.to_dict()
+        })
+        
+    except ValueError as e:
+        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Failed to update employee: {str(e)}'}), 500
+
+@app.route('/api/employees/<employee_id>', methods=['DELETE'])
+@jwt_required()
+def delete_employee(employee_id):
+    try:
+        user_id = get_jwt_identity()
+        
+        employee = Employee.query.filter_by(
+            employee_id=employee_id,
+            user_id=user_id
+        ).first()
+        
+        if not employee:
+            return jsonify({'error': 'Employee not found'}), 404
+        
+        db.session.delete(employee)
+        db.session.commit()
+        
+        return jsonify({'message': 'Employee deleted successfully'})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Failed to delete employee: {str(e)}'}), 500
 
 # Protected main route for staging access
 @app.route("/")

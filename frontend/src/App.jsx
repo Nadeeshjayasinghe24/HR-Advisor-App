@@ -3,6 +3,7 @@ import Layout from './components/Layout'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
 import HRAdvisor from './components/HRAdvisor'
+import EmployeeManagement from './components/EmployeeManagement'
 import Subscription from './components/Subscription'
 import './App.css'
 
@@ -50,10 +51,7 @@ function App() {
       case 'hr-advisor':
         return <HRAdvisor token={token} />
       case 'employees':
-        return <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-900">Employee Management</h2>
-          <p className="text-gray-600 mt-2">Coming soon...</p>
-        </div>
+        return <EmployeeManagement token={token} />
       case 'history':
         return <div className="text-center py-12">
           <h2 className="text-2xl font-bold text-gray-900">Prompt History</h2>
