@@ -124,6 +124,7 @@ class Employee(db.Model):
     phone = db.Column(db.String(50), nullable=True)
     position = db.Column(db.String(255), nullable=True)
     department = db.Column(db.String(255), nullable=True)
+    country = db.Column(db.String(10), nullable=False, default='US')
     hire_date = db.Column(db.Date, nullable=True)
     salary = db.Column(db.Float, nullable=True)
     status = db.Column(db.String(50), default='active')
@@ -141,6 +142,7 @@ class Employee(db.Model):
             'phone': self.phone,
             'position': self.position,
             'department': self.department,
+            'country': self.country,
             'hire_date': self.hire_date.isoformat() if self.hire_date else None,
             'salary': self.salary,
             'status': self.status,
@@ -643,6 +645,7 @@ def add_employee():
             phone=data.get('phone'),
             position=data.get('position'),
             department=data.get('department'),
+            country=data.get('country', 'US'),
             hire_date=datetime.strptime(data['hire_date'], '%Y-%m-%d').date() if data.get('hire_date') else None,
             salary=float(data['salary']) if data.get('salary') else None,
             status=data.get('status', 'active'),
@@ -720,6 +723,8 @@ def update_employee(employee_id):
             employee.position = data['position']
         if 'department' in data:
             employee.department = data['department']
+        if 'country' in data:
+            employee.country = data['country']
         if data.get('hire_date'):
             employee.hire_date = datetime.strptime(data['hire_date'], '%Y-%m-%d').date()
         if 'salary' in data:

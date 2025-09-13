@@ -29,12 +29,29 @@ const EmployeeManagement = ({ token }) => {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  const countries = [
+    { code: 'US', name: 'United States' },
+    { code: 'GB', name: 'United Kingdom' },
+    { code: 'SG', name: 'Singapore' },
+    { code: 'AU', name: 'Australia' },
+    { code: 'CA', name: 'Canada' },
+    { code: 'DE', name: 'Germany' },
+    { code: 'FR', name: 'France' },
+    { code: 'IN', name: 'India' },
+    { code: 'JP', name: 'Japan' },
+    { code: 'MY', name: 'Malaysia' },
+    { code: 'HK', name: 'Hong Kong' },
+    { code: 'ID', name: 'Indonesia' },
+    { code: 'TH', name: 'Thailand' }
+  ]
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     position: '',
     department: '',
+    country: 'US',
     hire_date: '',
     salary: '',
     status: 'active',
@@ -133,6 +150,7 @@ const EmployeeManagement = ({ token }) => {
       phone: employee.phone || '',
       position: employee.position || '',
       department: employee.department || '',
+      country: employee.country || 'US',
       hire_date: employee.hire_date ? employee.hire_date.split('T')[0] : '',
       salary: employee.salary || '',
       status: employee.status || 'active',
@@ -150,6 +168,7 @@ const EmployeeManagement = ({ token }) => {
       phone: '',
       position: '',
       department: '',
+      country: 'US',
       hire_date: '',
       salary: '',
       status: 'active',
@@ -172,7 +191,9 @@ const EmployeeManagement = ({ token }) => {
     employee.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     employee.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     employee.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.department?.toLowerCase().includes(searchTerm.toLowerCase())
+    employee.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    employee.country?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    countries.find(c => c.code === employee.country)?.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const formatDate = (dateString) => {
@@ -307,6 +328,24 @@ const EmployeeManagement = ({ token }) => {
                     onChange={handleInputChange}
                     placeholder="Engineering"
                   />
+                </div>
+
+                <div>
+                  <Label htmlFor="country">Country *</Label>
+                  <select
+                    id="country"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    required
+                  >
+                    {countries.map((country) => (
+                      <option key={country.code} value={country.code}>
+                        {country.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -468,6 +507,12 @@ const EmployeeManagement = ({ token }) => {
                     <div className="flex items-center text-gray-600">
                       <Users className="h-3 w-3 mr-2" />
                       {employee.department}
+                    </div>
+                  )}
+                  {employee.country && (
+                    <div className="flex items-center text-gray-600">
+                      <MapPin className="h-3 w-3 mr-2" />
+                      {countries.find(c => c.code === employee.country)?.name || employee.country}
                     </div>
                   )}
                   {employee.hire_date && (
