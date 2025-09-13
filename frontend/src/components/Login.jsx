@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,6 +22,20 @@ const Login = ({ onLogin }) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    // Check required fields
+    if (!formData.email || !formData.password) {
+      setError('Please fill in all required fields')
+      setLoading(false)
+      return
+    }
+
+    // Check confirm password for signup
+    if (!isLogin && !formData.confirmPassword) {
+      setError('Please confirm your password')
+      setLoading(false)
+      return
+    }
 
     // Password confirmation validation for signup
     if (!isLogin && formData.password !== formData.confirmPassword) {
@@ -75,58 +89,8 @@ const Login = ({ onLogin }) => {
 
   const handleGoogleAuth = async () => {
     setGoogleLoading(true)
-    setError('')
-    
-    try {
-      // Initialize Google OAuth
-      if (window.google) {
-        window.google.accounts.oauth2.initTokenClient({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-          scope: 'email profile',
-          callback: async (response) => {
-            try {
-              // Get user info from Google
-              const userInfoResponse = await fetch(`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${response.access_token}`)
-              const userInfo = await userInfoResponse.json()
-              
-              // Register/login with backend
-              const backendResponse = await fetch('https://hr-advisor-app.onrender.com/api/auth/google', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  google_id: userInfo.id,
-                  email: userInfo.email,
-                  name: userInfo.name,
-                  picture: userInfo.picture
-                }),
-              })
-
-              const data = await backendResponse.json()
-
-              if (backendResponse.ok) {
-                localStorage.setItem('token', data.access_token)
-                localStorage.setItem('user', JSON.stringify(data.user))
-                onLogin(data.user, data.access_token)
-              } else {
-                setError(data.error || `Google ${isLogin ? 'login' : 'signup'} failed`)
-              }
-            } catch (err) {
-              setError(`Google ${isLogin ? 'login' : 'signup'} failed. Please try again.`)
-            } finally {
-              setGoogleLoading(false)
-            }
-          },
-        }).requestAccessToken()
-      } else {
-        setError('Google OAuth not loaded. Please refresh the page.')
-        setGoogleLoading(false)
-      }
-    } catch (err) {
-      setError(`Google ${isLogin ? 'login' : 'signup'} failed. Please try again.`)
-      setGoogleLoading(false)
-    }
+    setError('Google OAuth is currently being configured. Please use email signup for now.')
+    setGoogleLoading(false)
   }
 
   const handleInputChange = (e) => {
