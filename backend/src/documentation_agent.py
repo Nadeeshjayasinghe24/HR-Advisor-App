@@ -359,7 +359,7 @@ class DocumentationAgent:
             update_content = update['content']
             
             # Find section in content
-            section_pattern = f"## 🎯 **{section}**|## 🤖 **{section}**|## 🏗️ **{section}**|## 📊 **{section}**|## 🔌 **{section}**"
+            section_pattern = f"## (🎯|🤖|🏗️|📊|🔌) \*\*{re.escape(section)}\*\*"
             section_match = re.search(section_pattern, updated_content)
             
             if section_match:
