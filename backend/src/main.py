@@ -6,6 +6,8 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 import uuid
 from datetime import datetime
 import os
+import asyncio
+from llm_orchestrator import orchestrator
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
@@ -340,40 +342,57 @@ def hr_advisor_query():
         if user.coins < 1:
             return jsonify({'error': 'Insufficient coins'}), 402
         
-        # OpenAI integration for HR advice
+        # Multi-LLM Orchestration for HR advice
         try:
-            import openai
-            
             # Country-specific HR context
             country_contexts = {
-                'US': 'United States federal and state employment laws, FLSA, FMLA, ADA compliance',
-                'UK': 'UK employment law, ACAS guidelines, GDPR compliance, statutory rights',
-                'SG': 'Singapore Employment Act, MOM regulations, CPF requirements',
-                'AU': 'Australian Fair Work Act, workplace safety regulations',
-                'CA': 'Canadian Labour Code, provincial employment standards',
-                'DE': 'German employment law, works councils, data protection',
-                'FR': 'French Labour Code, collective bargaining agreements',
-                'IN': 'Indian labour laws, PF, ESI, gratuity regulations'
+                'US': 'United States federal and state employment laws, FLSA, FMLA, ADA compliance, OSHA regulations',
+                'UK': 'UK employment law, ACAS guidelines, GDPR compliance, statutory rights, Working Time Regulations',
+                'SG': 'Singapore Employment Act, MOM regulations, CPF requirements, workplace safety standards',
+                'AU': 'Australian Fair Work Act, workplace safety regulations, superannuation requirements',
+                'CA': 'Canadian Labour Code, provincial employment standards, health and safety regulations',
+                'DE': 'German employment law, works councils, data protection, Arbeitsrecht',
+                'FR': 'French Labour Code, collective bargaining agreements, social security regulations',
+                'IN': 'Indian labour laws, PF, ESI, gratuity regulations, Factories Act',
+                'MY': 'Malaysian Employment Act, EPF, SOCSO, industrial relations',
+                'HK': 'Hong Kong Employment Ordinance, MPF, labour tribunal procedures',
+                'JP': 'Japanese Labor Standards Act, employment insurance, workplace safety',
+                'ID': 'Indonesian Labor Law, BPJS, manpower regulations',
+                'TH': 'Thai Labor Protection Act, social security, work permit regulations'
             }
             
             context = country_contexts.get(country, country_contexts['US'])
+            system_context = f"You are an expert HR advisor specializing in {context}. Provide practical, actionable advice that complies with local regulations and best practices. Always cite relevant laws and regulations."
             
-            client = openai.OpenAI()
-            response = client.chat.completions.create(
-                model="gemini-2.5-flash",
-                messages=[
-                    {"role": "system", "content": f"You are an expert HR advisor specializing in {context}. Provide practical, actionable advice that complies with local regulations and best practices."},
-                    {"role": "user", "content": query}
-                ],
-                max_tokens=500,
-                temperature=0.7
-            )
+            # Use Multi-LLM Orchestration
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
             
-            response_text = response.choices[0].message.content
+            try:
+                orchestration_result = loop.run_until_complete(
+                    orchestrator.orchestrate_llm_responses(query, country, system_context)
+                )
+                
+                response_text = orchestration_result['content']
+                metadata = {
+                    'provider_used': orchestration_result['provider_used'],
+                    'confidence_score': orchestration_result['confidence_score'],
+                    'sources': orchestration_result['sources'],
+                    'llm_responses_count': orchestration_result['llm_responses_count']
+                }
+                
+            finally:
+                loop.close()
             
         except Exception as e:
-            # Fallback to mock response if OpenAI fails
-            response_text = f"HR Advisor response for {country}: {query[:50]}... [OpenAI integration error: {str(e)}. This is a mock response.]"
+            # Fallback to basic response if orchestration fails
+            response_text = f"HR guidance for {country}: {query}. Please ensure compliance with local employment laws and consult official government sources for the most current regulations. [Multi-LLM orchestration error: {str(e)}]"
+            metadata = {
+                'provider_used': 'fallback',
+                'confidence_score': 0.3,
+                'sources': [],
+                'llm_responses_count': 0
+            }
         
         # Deduct coins
         user.coins -= 1
@@ -395,7 +414,8 @@ def hr_advisor_query():
             'country_context': country,
             'coins_consumed': 1,
             'coins_remaining': user.coins,
-            'prompt_id': prompt_history.prompt_id
+            'prompt_id': prompt_history.prompt_id,
+            'orchestration_metadata': metadata
         })
         
     except Exception as e:
@@ -423,40 +443,57 @@ def hr_advisor_chat():
         if user.coins < 1:
             return jsonify({'error': 'Insufficient coins'}), 402
         
-        # OpenAI integration for HR advice
+        # Multi-LLM Orchestration for HR template generation
         try:
-            import openai
-            
             # Country-specific HR context
             country_contexts = {
-                'US': 'United States federal and state employment laws, FLSA, FMLA, ADA compliance',
-                'UK': 'UK employment law, ACAS guidelines, GDPR compliance, statutory rights',
-                'SG': 'Singapore Employment Act, MOM regulations, CPF requirements',
-                'AU': 'Australian Fair Work Act, workplace safety regulations',
-                'CA': 'Canadian Labour Code, provincial employment standards',
-                'DE': 'German employment law, works councils, data protection',
-                'FR': 'French Labour Code, collective bargaining agreements',
-                'IN': 'Indian labour laws, PF, ESI, gratuity regulations'
+                'US': 'United States federal and state employment laws, FLSA, FMLA, ADA compliance, OSHA regulations',
+                'UK': 'UK employment law, ACAS guidelines, GDPR compliance, statutory rights, Working Time Regulations',
+                'SG': 'Singapore Employment Act, MOM regulations, CPF requirements, workplace safety standards',
+                'AU': 'Australian Fair Work Act, workplace safety regulations, superannuation requirements',
+                'CA': 'Canadian Labour Code, provincial employment standards, health and safety regulations',
+                'DE': 'German employment law, works councils, data protection, Arbeitsrecht',
+                'FR': 'French Labour Code, collective bargaining agreements, social security regulations',
+                'IN': 'Indian labour laws, PF, ESI, gratuity regulations, Factories Act',
+                'MY': 'Malaysian Employment Act, EPF, SOCSO, industrial relations',
+                'HK': 'Hong Kong Employment Ordinance, MPF, labour tribunal procedures',
+                'JP': 'Japanese Labor Standards Act, employment insurance, workplace safety',
+                'ID': 'Indonesian Labor Law, BPJS, manpower regulations',
+                'TH': 'Thai Labor Protection Act, social security, work permit regulations'
             }
             
             context = country_contexts.get(country, country_contexts['US'])
+            system_context = f"You are an expert HR advisor specializing in {context}. Generate professional HR templates and documents that comply with local regulations and best practices. Always include relevant legal disclaimers and cite applicable laws."
             
-            client = openai.OpenAI()
-            response = client.chat.completions.create(
-                model="gemini-2.5-flash",
-                messages=[
-                    {"role": "system", "content": f"You are an expert HR advisor specializing in {context}. Provide practical, actionable advice that complies with local regulations and best practices."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=500,
-                temperature=0.7
-            )
+            # Use Multi-LLM Orchestration
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
             
-            response_text = response.choices[0].message.content
+            try:
+                orchestration_result = loop.run_until_complete(
+                    orchestrator.orchestrate_llm_responses(prompt, country, system_context)
+                )
+                
+                response_text = orchestration_result['content']
+                metadata = {
+                    'provider_used': orchestration_result['provider_used'],
+                    'confidence_score': orchestration_result['confidence_score'],
+                    'sources': orchestration_result['sources'],
+                    'llm_responses_count': orchestration_result['llm_responses_count']
+                }
+                
+            finally:
+                loop.close()
             
         except Exception as e:
-            # Fallback to mock response if OpenAI fails
-            response_text = f"HR Advisor response for {country}: {prompt[:50]}... [OpenAI integration error: {str(e)}. This is a mock response.]"
+            # Fallback to basic response if orchestration fails
+            response_text = f"HR template for {country}: {prompt}. Please ensure compliance with local employment laws and consult official government sources for the most current regulations. [Multi-LLM orchestration error: {str(e)}]"
+            metadata = {
+                'provider_used': 'fallback',
+                'confidence_score': 0.3,
+                'sources': [],
+                'llm_responses_count': 0
+            }
         
         # Deduct coins
         user.coins -= 1
@@ -476,7 +513,8 @@ def hr_advisor_chat():
         return jsonify({
             'response': response_text,
             'coins_remaining': user.coins,
-            'prompt_id': prompt_history.prompt_id
+            'prompt_id': prompt_history.prompt_id,
+            'orchestration_metadata': metadata
         })
         
     except Exception as e:
