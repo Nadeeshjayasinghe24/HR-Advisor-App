@@ -28,6 +28,10 @@ class LLMProvider(Enum):
     GOOGLE_GEMINI_FLASH = "google_gemini_flash"
     ANTHROPIC_CLAUDE3_SONNET = "anthropic_claude3_sonnet"
     ANTHROPIC_CLAUDE3_HAIKU = "anthropic_claude3_haiku"
+    DEEPSEEK_R1 = "deepseek_r1"
+    DEEPSEEK_V3 = "deepseek_v3"
+    GROQ_LLAMA_70B = "groq_llama_70b"
+    GROQ_LLAMA_8B = "groq_llama_8b"
 
 @dataclass
 class LLMResponse:
@@ -51,6 +55,8 @@ class MultiLLMOrchestrator:
     def __init__(self):
         self.openai_client = None
         self.anthropic_client = None
+        self.openrouter_client = None
+        self.groq_client = None
         self.setup_clients()
         
     def setup_clients(self):
@@ -67,6 +73,20 @@ class MultiLLMOrchestrator:
             # Anthropic setup
             if os.getenv('ANTHROPIC_API_KEY'):
                 self.anthropic_client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
+            
+            # OpenRouter setup (for DeepSeek and other models)
+            if os.getenv('OPENROUTER_API_KEY'):
+                self.openrouter_client = openai.OpenAI(
+                    api_key=os.getenv('OPENROUTER_API_KEY'),
+                    base_url="https://openrouter.ai/api/v1"
+                )
+            
+            # Groq setup (for fast Llama models)
+            if os.getenv('GROQ_API_KEY'):
+                self.groq_client = openai.OpenAI(
+                    api_key=os.getenv('GROQ_API_KEY'),
+                    base_url="https://api.groq.com/openai/v1"
+                )
                 
         except Exception as e:
             print(f"Error setting up LLM clients: {e}")
@@ -262,6 +282,102 @@ class MultiLLMOrchestrator:
                 error=str(e)
             )
 
+    async def call_deepseek(self, prompt: str, system_context: str, model: str = "deepseek/deepseek-r1:free") -> LLMResponse:
+        """Call DeepSeek models via OpenRouter"""
+        if not self.openrouter_client:
+            return LLMResponse(
+                provider=LLMProvider.DEEPSEEK_R1,
+                content="",
+                confidence_score=0.0,
+                response_time=0.0,
+                tokens_used=0,
+                error="OpenRouter client not configured"
+            )
+        
+        start_time = time.time()
+        try:
+            response = self.openrouter_client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_context},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=800,
+                temperature=0.3,
+                extra_headers={
+                    "HTTP-Referer": "https://hr-advisor-app.vercel.app",
+                    "X-Title": "AI HR Advisor"
+                }
+            )
+            
+            response_time = time.time() - start_time
+            
+            provider = LLMProvider.DEEPSEEK_R1 if "r1" in model else LLMProvider.DEEPSEEK_V3
+            
+            return LLMResponse(
+                provider=provider,
+                content=response.choices[0].message.content,
+                confidence_score=0.92,  # DeepSeek has excellent reasoning
+                response_time=response_time,
+                tokens_used=response.usage.total_tokens if response.usage else 0
+            )
+            
+        except Exception as e:
+            return LLMResponse(
+                provider=LLMProvider.DEEPSEEK_R1,
+                content="",
+                confidence_score=0.0,
+                response_time=time.time() - start_time,
+                tokens_used=0,
+                error=str(e)
+            )
+
+    async def call_groq(self, prompt: str, system_context: str, model: str = "llama-3.3-70b-versatile") -> LLMResponse:
+        """Call Groq Llama models"""
+        if not self.groq_client:
+            return LLMResponse(
+                provider=LLMProvider.GROQ_LLAMA_70B,
+                content="",
+                confidence_score=0.0,
+                response_time=0.0,
+                tokens_used=0,
+                error="Groq client not configured"
+            )
+        
+        start_time = time.time()
+        try:
+            response = self.groq_client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_context},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=800,
+                temperature=0.3
+            )
+            
+            response_time = time.time() - start_time
+            
+            provider = LLMProvider.GROQ_LLAMA_70B if "70b" in model else LLMProvider.GROQ_LLAMA_8B
+            
+            return LLMResponse(
+                provider=provider,
+                content=response.choices[0].message.content,
+                confidence_score=0.82,  # Good quality, very fast
+                response_time=response_time,
+                tokens_used=response.usage.total_tokens if response.usage else 0
+            )
+            
+        except Exception as e:
+            return LLMResponse(
+                provider=LLMProvider.GROQ_LLAMA_70B,
+                content="",
+                confidence_score=0.0,
+                response_time=time.time() - start_time,
+                tokens_used=0,
+                error=str(e)
+            )
+
     def calculate_response_quality(self, response: LLMResponse, sources: List[SourceReference]) -> float:
         """Calculate overall quality score for a response"""
         quality_score = 0.0
@@ -306,6 +422,16 @@ class MultiLLMOrchestrator:
         
         # Define LLM calls to make
         llm_tasks = []
+        
+        # DeepSeek via OpenRouter (FREE - highest priority for reasoning)
+        if self.openrouter_client:
+            llm_tasks.append(self.call_deepseek(query, enhanced_context, "deepseek/deepseek-r1:free"))
+            llm_tasks.append(self.call_deepseek(query, enhanced_context, "deepseek/deepseek-chat:free"))
+        
+        # Groq Llama models (FREE - high volume capacity)
+        if self.groq_client:
+            llm_tasks.append(self.call_groq(query, enhanced_context, "llama-3.3-70b-versatile"))
+            llm_tasks.append(self.call_groq(query, enhanced_context, "llama-3.1-8b-instant"))
         
         # OpenAI GPT-4 (if available)
         if self.openai_client:
