@@ -113,8 +113,8 @@ const SimplifiedDashboard = () => {
                 <MessageCircle className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">AI Assistant</h3>
-                <p className="text-sm text-gray-600">Ask me anything about HR</p>
+                <h3 className="font-semibold text-gray-900">AnNi AI Assistant</h3>
+                <p className="text-sm text-gray-600">HR made simple - Ask me anything</p>
               </div>
             </div>
             

@@ -1,6 +1,6 @@
-# HR Advisor Web Application
+# AnNi AI - HR made simple
 
-An AI-powered HR advisor designed specifically for the APAC market, providing country-specific compliance guidance and HR management tools for startups and SMEs.
+An intelligent AI-powered HR assistant designed specifically for the APAC market, providing country-specific compliance guidance and HR management tools for startups and SMEs.
 
 ## Project Structure
 

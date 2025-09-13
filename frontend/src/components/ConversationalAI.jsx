@@ -26,7 +26,7 @@ const ConversationalAI = ({ isFullScreen = false, onClose }) => {
     {
       id: 1,
       type: 'ai',
-      content: "Hi! I'm your AI HR Assistant. I can help you with employee management, performance reviews, compliance questions, and much more. What would you like to work on today?",
+      content: "Hi! I'm AnNi AI, your intelligent HR assistant. HR made simple! I can help you with employee management, performance reviews, compliance questions, and much more. What would you like to work on today?",
       timestamp: new Date(),
       suggestions: [
         "Show me employees at retention risk",
@@ -222,9 +222,9 @@ const ConversationalAI = ({ isFullScreen = false, onClose }) => {
             <Bot className="h-5 w-5 text-blue-600" />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">AI HR Assistant</h3>
+            <h3 className="font-semibold text-gray-900">AnNi AI</h3>
             <p className="text-sm text-gray-600">
-              {isTyping ? 'Typing...' : 'Online and ready to help'}
+              {isTyping ? 'Typing...' : 'HR made simple - Online and ready to help'}
             </p>
           </div>
         </div>

@@ -144,10 +144,10 @@ const Login = ({ onLogin }) => {
             <Users className="h-6 w-6 text-white" />
           </div>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            HR Advisor Platform
+            AnNi AI
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Your AI-powered HR management solution
+            HR made simple - Your intelligent HR assistant
           </p>
         </div>
 
