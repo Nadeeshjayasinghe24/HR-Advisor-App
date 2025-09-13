@@ -8,6 +8,11 @@ from datetime import datetime
 import os
 import asyncio
 from llm_orchestrator import orchestrator
+from workflow_automation_agent import workflow_agent
+from document_generation_agent import document_agent
+from ai_governance_agent import governance_agent
+from proactive_compliance_agent import compliance_agent
+from predictive_analytics_agent import predictive_agent
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
@@ -121,19 +126,57 @@ class Employee(db.Model):
     __tablename__ = 'employee'
     employee_id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = db.Column(db.String(36), db.ForeignKey('user.user_id'), nullable=False)
+    
+    # Basic Information
     name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(50), nullable=True)
+    address = db.Column(db.Text, nullable=True)
+    
+    # Employment Details
     position = db.Column(db.String(255), nullable=True)
     department = db.Column(db.String(255), nullable=True)
     country = db.Column(db.String(10), nullable=False, default='US')
+    location = db.Column(db.String(255), nullable=True)  # Office location/city
+    employment_type = db.Column(db.String(50), nullable=True, default='Full-time')  # Full-time, Part-time, Contract, Intern
+    work_arrangement = db.Column(db.String(50), nullable=True, default='On-site')  # On-site, Remote, Hybrid
+    
+    # Dates and Status
     hire_date = db.Column(db.Date, nullable=True)
+    termination_date = db.Column(db.Date, nullable=True)
+    status = db.Column(db.String(50), default='Active')  # Active, Inactive, On Leave, Terminated
+    termination_type = db.Column(db.String(50), nullable=True)  # Voluntary, Involuntary
+    termination_reason = db.Column(db.Text, nullable=True)
+    
+    # Compensation
     salary = db.Column(db.Float, nullable=True)
-    status = db.Column(db.String(50), default='active')
-    address = db.Column(db.Text, nullable=True)
-    emergency_contact = db.Column(db.String(255), nullable=True)
-    emergency_phone = db.Column(db.String(50), nullable=True)
+    currency = db.Column(db.String(10), nullable=True, default='USD')
+    
+    # Demographics (for diversity analytics)
+    gender = db.Column(db.String(50), nullable=True)
+    age = db.Column(db.Integer, nullable=True)
+    ethnicity = db.Column(db.String(100), nullable=True)
+    
+    # Performance and Engagement
+    engagement_score = db.Column(db.Float, nullable=True)  # 1-10 scale
+    last_engagement_survey = db.Column(db.Date, nullable=True)
+    performance_rating = db.Column(db.String(50), nullable=True)  # Excellent, Good, Satisfactory, Needs Improvement
+    last_performance_review = db.Column(db.Date, nullable=True)
+    
+    # Attendance and Leave
+    total_leave_days = db.Column(db.Integer, nullable=True, default=0)
+    sick_leave_taken = db.Column(db.Integer, nullable=True, default=0)
+    vacation_leave_taken = db.Column(db.Integer, nullable=True, default=0)
+    unplanned_absences = db.Column(db.Integer, nullable=True, default=0)  # For absenteeism tracking
+    
+    # Emergency Contact
+    emergency_contact_name = db.Column(db.String(255), nullable=True)
+    emergency_contact_phone = db.Column(db.String(50), nullable=True)
+    emergency_contact_relationship = db.Column(db.String(100), nullable=True)
+    
+    # System Fields
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def to_dict(self):
         return {
@@ -142,16 +185,36 @@ class Employee(db.Model):
             'name': self.name,
             'email': self.email,
             'phone': self.phone,
+            'address': self.address,
             'position': self.position,
             'department': self.department,
             'country': self.country,
+            'location': self.location,
+            'employment_type': self.employment_type,
+            'work_arrangement': self.work_arrangement,
             'hire_date': self.hire_date.isoformat() if self.hire_date else None,
-            'salary': self.salary,
+            'termination_date': self.termination_date.isoformat() if self.termination_date else None,
             'status': self.status,
-            'address': self.address,
-            'emergency_contact': self.emergency_contact,
-            'emergency_phone': self.emergency_phone,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'termination_type': self.termination_type,
+            'termination_reason': self.termination_reason,
+            'salary': self.salary,
+            'currency': self.currency,
+            'gender': self.gender,
+            'age': self.age,
+            'ethnicity': self.ethnicity,
+            'engagement_score': self.engagement_score,
+            'last_engagement_survey': self.last_engagement_survey.isoformat() if self.last_engagement_survey else None,
+            'performance_rating': self.performance_rating,
+            'last_performance_review': self.last_performance_review.isoformat() if self.last_performance_review else None,
+            'total_leave_days': self.total_leave_days,
+            'sick_leave_taken': self.sick_leave_taken,
+            'vacation_leave_taken': self.vacation_leave_taken,
+            'unplanned_absences': self.unplanned_absences,
+            'emergency_contact_name': self.emergency_contact_name,
+            'emergency_contact_phone': self.emergency_contact_phone,
+            'emergency_contact_relationship': self.emergency_contact_relationship,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
 
 # Initialize database on startup

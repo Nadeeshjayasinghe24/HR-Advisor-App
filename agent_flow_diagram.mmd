@@ -1,0 +1,51 @@
+graph TD
+    A[User Interface] --> B[Flask API Layer]
+    B --> C{Multi-LLM Orchestration Agent}
+    
+    C --> D[Query Analysis & Routing]
+    C --> E[Context Enhancement]
+    C --> F[Parallel LLM Execution]
+    
+    F --> G[OpenAI Agent<br/>GPT-4/3.5]
+    F --> H[Google Agent<br/>Gemini Pro/Flash]
+    F --> I[Anthropic Agent<br/>Claude-3]
+    F --> J[Groq Agent<br/>Llama 70B/8B]
+    F --> K[OpenRouter Agent<br/>DeepSeek R1/V3]
+    F --> L[Together AI Agent<br/>Llama 3.2]
+    
+    G --> M[Response Validation]
+    H --> M
+    I --> M
+    J --> M
+    K --> M
+    L --> M
+    
+    C --> N[Source Integration Agent]
+    N --> O[Government Sources<br/>MoM, DoL, etc.]
+    N --> P[Legal Databases<br/>Employment Laws]
+    N --> Q[Academic Research<br/>HR Studies]
+    N --> R[Industry Standards<br/>Best Practices]
+    
+    O --> S[Source Validation]
+    P --> S
+    Q --> S
+    R --> S
+    
+    M --> T[Response Synthesis & Voting]
+    S --> T
+    
+    T --> U[Confidence Scoring]
+    T --> V[Citation Generation]
+    T --> W[Final Response Assembly]
+    
+    W --> X[Response Delivery]
+    X --> Y[Data Persistence]
+    
+    Y --> Z1[User Profiles]
+    Y --> Z2[Chat History]
+    Y --> Z3[Analytics Data]
+    
+    style C fill:#e1f5fe
+    style F fill:#f3e5f5
+    style N fill:#e8f5e8
+    style T fill:#fff3e0
