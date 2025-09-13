@@ -19,15 +19,29 @@ CORS(app)
 
 # Initialize database tables on startup
 def init_database():
-    with app.app_context():
-        db.create_all()
-        # Initialize subscription plans if they don't exist
-        if not SubscriptionPlan.query.first():
-            free_plan = SubscriptionPlan(name='Free', monthly_cost=0.0, coin_allocation=10, features='Basic HR Advice,Limited Templates')
-            premium_plan = SubscriptionPlan(name='Premium', monthly_cost=29.99, coin_allocation=100, features='Advanced HR Advice,All Templates,Basic Workflows')
-            enterprise_plan = SubscriptionPlan(name='Enterprise', monthly_cost=99.99, coin_allocation=1000, features='Custom HR Advice,All Templates,Advanced Workflows,Dedicated Support')
-            db.session.add_all([free_plan, premium_plan, enterprise_plan])
-            db.session.commit()
+    try:
+        with app.app_context():
+            print("Initializing database...")
+            db.create_all()
+            print("Database tables created successfully!")
+            
+            # Initialize subscription plans if they don't exist
+            if not SubscriptionPlan.query.first():
+                print("Creating default subscription plans...")
+                free_plan = SubscriptionPlan(name='Free', monthly_cost=0.0, coin_allocation=10, features='Basic HR Advice,Limited Templates')
+                premium_plan = SubscriptionPlan(name='Premium', monthly_cost=29.99, coin_allocation=100, features='Advanced HR Advice,All Templates,Basic Workflows')
+                enterprise_plan = SubscriptionPlan(name='Enterprise', monthly_cost=99.99, coin_allocation=1000, features='Custom HR Advice,All Templates,Advanced Workflows,Dedicated Support')
+                db.session.add_all([free_plan, premium_plan, enterprise_plan])
+                db.session.commit()
+                print("Subscription plans created successfully!")
+            else:
+                print("Subscription plans already exist, skipping creation.")
+                
+    except Exception as e:
+        print(f"Database initialization error: {str(e)}")
+        # Don't fail the app startup, but log the error
+        import traceback
+        traceback.print_exc()
 
 # Models
 class SubscriptionPlan(db.Model):
@@ -104,7 +118,27 @@ init_database()
 # Routes
 @app.route('/api/health', methods=['GET'])
 def health():
-    return jsonify({'status': 'healthy', 'message': 'HR Advisor API is running'})
+    try:
+        # Test database connection
+        with app.app_context():
+            # Try to query the database
+            user_count = User.query.count()
+            plan_count = SubscriptionPlan.query.count()
+            
+        return jsonify({
+            'status': 'healthy', 
+            'message': 'HR Advisor API is running',
+            'database': 'connected',
+            'users': user_count,
+            'subscription_plans': plan_count
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'message': 'HR Advisor API is running but database has issues',
+            'database': 'error',
+            'error': str(e)
+        }), 500
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
