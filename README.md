@@ -111,7 +111,7 @@ DATABASE_URL=sqlite:///hr_advisor.db
 3. Make your changes
 4. Submit a pull request
 
-## License
+## License  
 
 This project is proprietary software. All rights reserved.
 
