@@ -17,6 +17,18 @@ db = SQLAlchemy(app)
 jwt = JWTManager(app)
 CORS(app)
 
+# Initialize database tables on startup
+def init_database():
+    with app.app_context():
+        db.create_all()
+        # Initialize subscription plans if they don't exist
+        if not SubscriptionPlan.query.first():
+            free_plan = SubscriptionPlan(name='Free', monthly_cost=0.0, coin_allocation=10, features='Basic HR Advice,Limited Templates')
+            premium_plan = SubscriptionPlan(name='Premium', monthly_cost=29.99, coin_allocation=100, features='Advanced HR Advice,All Templates,Basic Workflows')
+            enterprise_plan = SubscriptionPlan(name='Enterprise', monthly_cost=99.99, coin_allocation=1000, features='Custom HR Advice,All Templates,Advanced Workflows,Dedicated Support')
+            db.session.add_all([free_plan, premium_plan, enterprise_plan])
+            db.session.commit()
+
 # Models
 class SubscriptionPlan(db.Model):
     __tablename__ = 'subscription_plan'
@@ -85,6 +97,9 @@ class PromptHistory(db.Model):
             'timestamp': self.timestamp.isoformat() if self.timestamp else None,
             'prompt_type': self.prompt_type
         }
+
+# Initialize database on startup
+init_database()
 
 # Routes
 @app.route('/api/health', methods=['GET'])
@@ -458,32 +473,6 @@ def index():
     })
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        # Initialize default subscription plans if they don't exist
-        if not SubscriptionPlan.query.first():
-            db.session.add(SubscriptionPlan(name='Free', monthly_cost=0, coin_allocation=10, features='HR Advice,Basic Templates'))
-            db.session.add(SubscriptionPlan(name='Premium', monthly_cost=29.99, coin_allocation=500, features='All HR Advice,Advanced Templates,Workflow Automation'))
-            db.session.add(SubscriptionPlan(name='Enterprise', monthly_cost=99.99, coin_allocation=2000, features='All Features,Dedicated Support,Custom Integrations'))
-            db.session.commit()
-    app.run(debug=True, host='0.0.0.0')
-
-
-
-
-def init_subscription_plans():
-    with app.app_context():
-        if not SubscriptionPlan.query.first():
-            free_plan = SubscriptionPlan(name='Free', monthly_cost=0.0, coin_allocation=10, features='Basic HR Advice,Limited Templates')
-            premium_plan = SubscriptionPlan(name='Premium', monthly_cost=29.99, coin_allocation=100, features='Advanced HR Advice,All Templates,Basic Workflows')
-            enterprise_plan = SubscriptionPlan(name='Enterprise', monthly_cost=99.99, coin_allocation=1000, features='Custom HR Advice,All Templates,Advanced Workflows,Dedicated Support')
-            db.session.add_all([free_plan, premium_plan, enterprise_plan])
-            db.session.commit()
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        init_subscription_plans()
     app.run(debug=True, host='0.0.0.0', port=5000)
 
 
