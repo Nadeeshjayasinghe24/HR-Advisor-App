@@ -233,7 +233,7 @@ const Dashboard = ({ onPageChange, token }) => {
               </div>
             )}
           </CardContent>
-      </div>
+        </Card>
 
       {/* Daily Tips Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -296,6 +296,7 @@ const Dashboard = ({ onPageChange, token }) => {
         </Card>
       </div>
     </div>
+  </div>
   )
 }
 
