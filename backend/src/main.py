@@ -71,7 +71,6 @@ class SubscriptionPlan(db.Model):
 class User(db.Model):
     __tablename__ = 'user'
     user_id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -89,7 +88,6 @@ class User(db.Model):
     def to_dict(self):
         return {
             'user_id': self.user_id,
-            'username': self.username,
             'email': self.email,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'coins': self.coins,
@@ -257,19 +255,8 @@ def register():
         if User.query.filter_by(email=data['email']).first():
             return jsonify({'error': 'Email already exists'}), 400
         
-        # Generate username from email (before @ symbol)
-        username = data['email'].split('@')[0]
-        
-        # Ensure username is unique by adding number if needed
-        base_username = username
-        counter = 1
-        while User.query.filter_by(username=username).first():
-            username = f"{base_username}{counter}"
-            counter += 1
-        
-        # Create new user
+        # Create new user (no username needed)
         user = User(
-            username=username,
             email=data['email'],
             password_hash=generate_password_hash(data['password'])
         )
@@ -342,19 +329,8 @@ def google_auth():
                 'user': user.to_dict()
             })
         else:
-            # Create new user with Google data
-            # Generate username from email or name
-            username = email.split('@')[0]
-            counter = 1
-            original_username = username
-            
-            # Ensure username is unique
-            while User.query.filter_by(username=username).first():
-                username = f"{original_username}{counter}"
-                counter += 1
-            
+            # Create new user with Google data (no username needed)
             user = User(
-                username=username,
                 email=email,
                 password_hash=generate_password_hash(google_id),  # Use Google ID as password hash
                 google_id=google_id
