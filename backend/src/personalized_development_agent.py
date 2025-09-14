@@ -105,8 +105,15 @@ class PersonalizedDevelopmentAgent:
     - Progress tracking and analytics
     """
     
-    def __init__(self, project_root: str = "/home/ubuntu/hr_advisor_app"):
-        self.project_root = Path(project_root)
+    def __init__(self, project_root: str = None):
+        # Auto-detect project root based on current file location
+        if project_root is None:
+            current_file = Path(__file__).resolve()
+            # Go up from backend/src/personalized_development_agent.py to project root
+            self.project_root = current_file.parent.parent.parent
+        else:
+            self.project_root = Path(project_root)
+            
         self.db_path = self.project_root / "backend" / "hr_advisor.db"
         
         # Skill taxonomy and career paths

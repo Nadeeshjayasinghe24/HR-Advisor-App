@@ -86,15 +86,22 @@ class AdministrativeAutomationAgent:
     - Integration with payroll systems
     """
     
-    def __init__(self, project_root: str = "/home/ubuntu/hr_advisor_app"):
-        self.project_root = Path(project_root)
+    def __init__(self, project_root: str = None):
+        # Auto-detect project root based on current file location
+        if project_root is None:
+            current_file = Path(__file__).resolve()
+            # Go up from backend/src/administrative_automation_agent.py to project root
+            self.project_root = current_file.parent.parent.parent
+        else:
+            self.project_root = Path(project_root)
+            
         self.db_path = self.project_root / "backend" / "hr_advisor.db"
         self.templates_dir = self.project_root / "backend" / "templates"
         self.output_dir = self.project_root / "backend" / "generated_documents"
         
-        # Create directories if they don't exist
-        self.templates_dir.mkdir(exist_ok=True)
-        self.output_dir.mkdir(exist_ok=True)
+        # Create directories if they don't exist (including parent directories)
+        self.templates_dir.mkdir(parents=True, exist_ok=True)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
         
         # Initialize Jinja2 template engine
         self.jinja_env = jinja2.Environment(
