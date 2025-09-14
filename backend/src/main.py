@@ -1227,8 +1227,17 @@ def index():
         'credentials': 'Use hr_admin / hr_staging_2024 for access'
     })
 
+# Production-ready application configuration
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Only use development server for local testing
+    # In production, Gunicorn will handle the WSGI application
+    import os
+    if os.getenv('FLASK_ENV') == 'development':
+        app.run(debug=True, host='0.0.0.0', port=5000)
+    else:
+        # Production mode - let Gunicorn handle the server
+        print("Production mode: Use Gunicorn to serve this application")
+        print("Command: gunicorn --config gunicorn_config.py main:app")
 
 
 
