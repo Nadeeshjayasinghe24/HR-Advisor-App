@@ -250,19 +250,26 @@ def register():
     try:
         data = request.get_json()
         
-        if not data or not data.get('username') or not data.get('email') or not data.get('password'):
+        if not data or not data.get('email') or not data.get('password'):
             return jsonify({'error': 'Missing required fields'}), 400
         
-        # Check if user already exists
-        if User.query.filter_by(username=data['username']).first():
-            return jsonify({'error': 'Username already exists'}), 400
-        
+        # Check if user already exists by email
         if User.query.filter_by(email=data['email']).first():
             return jsonify({'error': 'Email already exists'}), 400
         
+        # Generate username from email (before @ symbol)
+        username = data['email'].split('@')[0]
+        
+        # Ensure username is unique by adding number if needed
+        base_username = username
+        counter = 1
+        while User.query.filter_by(username=username).first():
+            username = f"{base_username}{counter}"
+            counter += 1
+        
         # Create new user
         user = User(
-            username=data['username'],
+            username=username,
             email=data['email'],
             password_hash=generate_password_hash(data['password'])
         )
