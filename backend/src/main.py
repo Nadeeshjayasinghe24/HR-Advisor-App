@@ -4,9 +4,13 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import asyncio
+import secrets
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from llm_orchestrator import orchestrator
 from workflow_automation_agent import workflow_agent
 from document_generation_agent import document_agent
@@ -78,6 +82,15 @@ class User(db.Model):
     country_context = db.Column(db.String(10), default='US')
     google_id = db.Column(db.String(100), nullable=True)  # For Google OAuth
     
+    # Email verification fields
+    email_verified = db.Column(db.Boolean, default=False, nullable=False)
+    verification_token = db.Column(db.String(100), nullable=True)
+    verification_sent_at = db.Column(db.DateTime, nullable=True)
+    
+    # Password reset fields
+    reset_token = db.Column(db.String(100), nullable=True)
+    reset_token_expires = db.Column(db.DateTime, nullable=True)
+    
     # New subscription fields
     subscription_plan_id = db.Column(db.Integer, db.ForeignKey('subscription_plan.id'), default=1) # Default to Free plan
     subscription_start_date = db.Column(db.DateTime, default=datetime.utcnow)
@@ -89,6 +102,7 @@ class User(db.Model):
         return {
             'user_id': self.user_id,
             'email': self.email,
+            'email_verified': self.email_verified,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'coins': self.coins,
             'country_context': self.country_context,
@@ -255,27 +269,365 @@ def register():
         if User.query.filter_by(email=data['email']).first():
             return jsonify({'error': 'Email already exists'}), 400
         
-        # Create new user (no username needed)
+        # Generate verification token
+        verification_token = secrets.token_urlsafe(32)
+        
+        # Create new user (unverified)
         user = User(
             email=data['email'],
-            password_hash=generate_password_hash(data['password'])
+            password_hash=generate_password_hash(data['password']),
+            email_verified=False,
+            verification_token=verification_token,
+            verification_sent_at=datetime.utcnow()
         )
         
         db.session.add(user)
         db.session.commit()
         
-        # Create access token
-        access_token = create_access_token(identity=user.user_id)
+        # Send verification email (simplified for now)
+        try:
+            send_verification_email(user.email, verification_token)
+        except Exception as e:
+            print(f"Failed to send verification email: {str(e)}")
+            # Don't fail registration if email fails
         
         return jsonify({
-            'message': 'User created successfully',
-            'access_token': access_token,
-            'user': user.to_dict()
+            'message': 'Registration successful! Please check your email to verify your account.',
+            'email_sent': True,
+            'user_id': user.user_id
         }), 201
         
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': f'Registration failed: {str(e)}'}), 500
+
+def send_verification_email(email, token):
+    """Send verification email to user"""
+    try:
+        # Email configuration from environment variables
+        smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+        smtp_port = int(os.getenv('SMTP_PORT', '587'))
+        smtp_username = os.getenv('SMTP_USERNAME')
+        smtp_password = os.getenv('SMTP_PASSWORD')
+        from_email = os.getenv('FROM_EMAIL', smtp_username)
+        
+        if not smtp_username or not smtp_password:
+            print("SMTP credentials not configured. Email not sent.")
+            return False
+        
+        # Create verification URL
+        verification_url = f"https://hr-advisor-app.vercel.app/verify-email?token={token}"
+        
+        # Create email content
+        subject = "Verify Your AnNi AI Account"
+        html_body = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Verify Your Account</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #2563eb;">AnNi AI</h1>
+                    <p style="color: #666;">HR made simple</p>
+                </div>
+                
+                <h2>Welcome to AnNi AI!</h2>
+                <p>Thank you for signing up. Please verify your email address to complete your registration.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{verification_url}" 
+                       style="background-color: #2563eb; color: white; padding: 12px 30px; 
+                              text-decoration: none; border-radius: 5px; display: inline-block;">
+                        Verify Email Address
+                    </a>
+                </div>
+                
+                <p>If the button doesn't work, copy and paste this link into your browser:</p>
+                <p style="word-break: break-all; color: #2563eb;">{verification_url}</p>
+                
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+                <p style="font-size: 12px; color: #666;">
+                    This verification link will expire in 24 hours. If you didn't create an account with AnNi AI, 
+                    please ignore this email.
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = from_email
+        msg['To'] = email
+        
+        # Add HTML content
+        html_part = MIMEText(html_body, 'html')
+        msg.attach(html_part)
+        
+        # Send email
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+            server.send_message(msg)
+        
+        print(f"Verification email sent successfully to {email}")
+        return True
+        
+    except Exception as e:
+        print(f"Failed to send verification email: {str(e)}")
+        return False
+
+def send_password_reset_email(email, token):
+    """Send password reset email to user"""
+    try:
+        # Email configuration from environment variables
+        smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+        smtp_port = int(os.getenv('SMTP_PORT', '587'))
+        smtp_username = os.getenv('SMTP_USERNAME')
+        smtp_password = os.getenv('SMTP_PASSWORD')
+        from_email = os.getenv('FROM_EMAIL', smtp_username)
+        
+        if not smtp_username or not smtp_password:
+            print("SMTP credentials not configured. Email not sent.")
+            return False
+        
+        # Create reset URL
+        reset_url = f"https://hr-advisor-app.vercel.app/reset-password?token={token}"
+        
+        # Create email content
+        subject = "Reset Your AnNi AI Password"
+        html_body = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Reset Your Password</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #2563eb;">AnNi AI</h1>
+                    <p style="color: #666;">HR made simple</p>
+                </div>
+                
+                <h2>Password Reset Request</h2>
+                <p>We received a request to reset your password for your AnNi AI account.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{reset_url}" 
+                       style="background-color: #dc2626; color: white; padding: 12px 30px; 
+                              text-decoration: none; border-radius: 5px; display: inline-block;">
+                        Reset Password
+                    </a>
+                </div>
+                
+                <p>If the button doesn't work, copy and paste this link into your browser:</p>
+                <p style="word-break: break-all; color: #dc2626;">{reset_url}</p>
+                
+                <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;">
+                    <p style="margin: 0; font-weight: bold; color: #dc2626;">Security Notice:</p>
+                    <p style="margin: 5px 0 0 0;">If you didn't request this password reset, please ignore this email. 
+                    Your password will remain unchanged.</p>
+                </div>
+                
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+                <p style="font-size: 12px; color: #666;">
+                    This password reset link will expire in 1 hour for security reasons. 
+                    If you need help, contact our support team.
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = from_email
+        msg['To'] = email
+        
+        # Add HTML content
+        html_part = MIMEText(html_body, 'html')
+        msg.attach(html_part)
+        
+        # Send email
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+            server.send_message(msg)
+        
+        print(f"Password reset email sent successfully to {email}")
+        return True
+        
+    except Exception as e:
+        print(f"Failed to send password reset email: {str(e)}")
+        return False
+
+@app.route('/api/auth/verify-email/<token>', methods=['GET'])
+def verify_email(token):
+    try:
+        user = User.query.filter_by(verification_token=token).first()
+        
+        if not user:
+            return jsonify({'error': 'Invalid verification token'}), 400
+        
+        if user.email_verified:
+            return jsonify({'message': 'Email already verified'}), 200
+        
+        # Check if token is expired (24 hours)
+        if user.verification_sent_at and (datetime.utcnow() - user.verification_sent_at) > timedelta(hours=24):
+            return jsonify({'error': 'Verification token expired'}), 400
+        
+        # Verify the email
+        user.email_verified = True
+        user.verification_token = None
+        db.session.commit()
+        
+        # Create access token for immediate login
+        access_token = create_access_token(identity=user.user_id)
+        
+        return jsonify({
+            'message': 'Email verified successfully! You are now logged in.',
+            'access_token': access_token,
+            'user': user.to_dict()
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Email verification failed: {str(e)}'}), 500
+
+@app.route('/api/auth/resend-verification', methods=['POST'])
+def resend_verification():
+    try:
+        data = request.get_json()
+        
+        if not data or not data.get('email'):
+            return jsonify({'error': 'Email is required'}), 400
+        
+        user = User.query.filter_by(email=data['email']).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        if user.email_verified:
+            return jsonify({'error': 'Email already verified'}), 400
+        
+        # Generate new verification token
+        verification_token = secrets.token_urlsafe(32)
+        user.verification_token = verification_token
+        user.verification_sent_at = datetime.utcnow()
+        db.session.commit()
+        
+        # Send verification email
+        try:
+            send_verification_email(user.email, verification_token)
+        except Exception as e:
+            print(f"Failed to send verification email: {str(e)}")
+            return jsonify({'error': 'Failed to send verification email'}), 500
+        
+        return jsonify({
+            'message': 'Verification email sent! Please check your inbox.',
+            'email_sent': True
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to resend verification: {str(e)}'}), 500
+
+@app.route('/api/auth/forgot-password', methods=['POST'])
+def forgot_password():
+    try:
+        data = request.get_json()
+        
+        if not data or not data.get('email'):
+            return jsonify({'error': 'Email is required'}), 400
+        
+        user = User.query.filter_by(email=data['email']).first()
+        
+        # Always return success message for security (don't reveal if email exists)
+        if not user:
+            return jsonify({
+                'message': 'If an account with that email exists, a password reset link has been sent.',
+                'email_sent': True
+            }), 200
+        
+        # Generate password reset token
+        reset_token = secrets.token_urlsafe(32)
+        user.reset_token = reset_token
+        user.reset_token_expires = datetime.utcnow() + timedelta(hours=1)  # 1 hour expiry
+        db.session.commit()
+        
+        # Send password reset email
+        try:
+            send_password_reset_email(user.email, reset_token)
+        except Exception as e:
+            print(f"Failed to send password reset email: {str(e)}")
+            # Don't reveal email sending failure for security
+        
+        return jsonify({
+            'message': 'If an account with that email exists, a password reset link has been sent.',
+            'email_sent': True
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Password reset request failed: {str(e)}'}), 500
+
+@app.route('/api/auth/reset-password', methods=['POST'])
+def reset_password():
+    try:
+        data = request.get_json()
+        
+        if not data or not data.get('token') or not data.get('password'):
+            return jsonify({'error': 'Token and new password are required'}), 400
+        
+        user = User.query.filter_by(reset_token=data['token']).first()
+        
+        if not user:
+            return jsonify({'error': 'Invalid or expired reset token'}), 400
+        
+        # Check if token is expired
+        if not user.reset_token_expires or datetime.utcnow() > user.reset_token_expires:
+            return jsonify({'error': 'Reset token has expired'}), 400
+        
+        # Validate password strength
+        if len(data['password']) < 6:
+            return jsonify({'error': 'Password must be at least 6 characters long'}), 400
+        
+        # Update password and clear reset token
+        user.password_hash = generate_password_hash(data['password'])
+        user.reset_token = None
+        user.reset_token_expires = None
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Password reset successful! You can now log in with your new password.',
+            'success': True
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Password reset failed: {str(e)}'}), 500
+
+@app.route('/api/auth/validate-reset-token/<token>', methods=['GET'])
+def validate_reset_token(token):
+    try:
+        user = User.query.filter_by(reset_token=token).first()
+        
+        if not user:
+            return jsonify({'valid': False, 'error': 'Invalid reset token'}), 400
+        
+        # Check if token is expired
+        if not user.reset_token_expires or datetime.utcnow() > user.reset_token_expires:
+            return jsonify({'valid': False, 'error': 'Reset token has expired'}), 400
+        
+        return jsonify({
+            'valid': True,
+            'email': user.email  # Show email for confirmation
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'valid': False, 'error': f'Token validation failed: {str(e)}'}), 500
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
@@ -288,6 +640,14 @@ def login():
         user = User.query.filter_by(email=data['email']).first()
         
         if user and check_password_hash(user.password_hash, data['password']):
+            # Check if email is verified
+            if not user.email_verified:
+                return jsonify({
+                    'error': 'Please verify your email address before logging in',
+                    'email_verified': False,
+                    'user_id': user.user_id
+                }), 403
+            
             access_token = create_access_token(identity=user.user_id)
             return jsonify({
                 'message': 'Login successful',

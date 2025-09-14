@@ -9,9 +9,11 @@ import '../App.css'
 
 const Login = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -93,6 +95,43 @@ const Login = ({ onLogin }) => {
     setGoogleLoading(false)
   }
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+    if (!formData.email) {
+      setError('Please enter your email address')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const response = await fetch('https://hr-advisor-app.onrender.com/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: formData.email }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccess(data.message)
+        setShowForgotPassword(false)
+        setFormData({ email: '', password: '', confirmPassword: '' })
+      } else {
+        setError(data.error || 'Failed to send reset email')
+      }
+    } catch (err) {
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
@@ -167,59 +206,132 @@ const Login = ({ onLogin }) => {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="email">Email address</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="Enter your email address"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="Enter your password"
-                />
-              </div>
-
-              {!isLogin && (
+            {showForgotPassword ? (
+              // Forgot Password Form
+              <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div>
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Label htmlFor="email">Email address</Label>
                   <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    required={!isLogin}
-                    value={formData.confirmPassword}
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="Confirm your password"
+                    placeholder="Enter your email address"
                   />
                 </div>
-              )}
 
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLogin ? 'Sign in' : 'Create account'}
-              </Button>
-            </form>
+                {success && (
+                  <Alert>
+                    <AlertDescription className="text-green-600">{success}</AlertDescription>
+                  </Alert>
+                )}
+
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Send Reset Link
+                </Button>
+
+                <div className="text-center">
+                  <button
+                    type="button"
+                    className="text-sm text-blue-600 hover:text-blue-500"
+                    onClick={() => {
+                      setShowForgotPassword(false)
+                      setError('')
+                      setSuccess('')
+                      setFormData({ email: '', password: '', confirmPassword: '' })
+                    }}
+                  >
+                    Back to Sign In
+                  </button>
+                </div>
+              </form>
+            ) : (
+              // Login/Signup Form
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="email">Email address</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Enter your email address"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Enter your password"
+                  />
+                </div>
+
+                {!isLogin && (
+                  <div>
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      required={!isLogin}
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      placeholder="Confirm your password"
+                    />
+                  </div>
+                )}
+
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                {success && (
+                  <Alert>
+                    <AlertDescription className="text-green-600">{success}</AlertDescription>
+                  </Alert>
+                )}
+
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isLogin ? 'Sign in' : 'Create account'}
+                </Button>
+
+                {isLogin && (
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      className="text-sm text-blue-600 hover:text-blue-500"
+                      onClick={() => {
+                        setShowForgotPassword(true)
+                        setError('')
+                        setSuccess('')
+                      }}
+                    >
+                      Forgot your password?
+                    </button>
+                  </div>
+                )}
+              </form>
+            )}
 
             <div className="mt-4 text-center">
               <button

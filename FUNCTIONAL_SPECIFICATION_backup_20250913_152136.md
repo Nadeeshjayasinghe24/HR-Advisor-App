@@ -1,6 +1,6 @@
 # AnNi AI - Functional Specification Document
 
-**Version:** 1.2  
+**Version:** 1.1  
 **Last Updated:** September 2025  
 **Document Type:** Technical & Functional Specification  
 **Platform:** AnNi AI - HR made simple  
@@ -75,21 +75,6 @@ AnNi AI is an intelligent, multi-agent HR management platform designed specifica
 ---
 
 ## 🤖 **Agent System Architecture**
-### Recent Update: Agent system update: Fix regex bug in documentation agent
-**Date:** 2025-09-13
-**Impact:** High
-
-
-### Recent Update: Agent system update: Implement G-P requirements: Administrative Automation Agent, Personalized Development Agent, and enhanced API endpoints
-**Date:** 2025-09-13
-**Impact:** High
-
-
-### Recent Update: Agent system update: Add missing markdown dependency for document generation agent
-**Date:** 2025-09-13
-**Impact:** High
-
-
 ### Recent Update: Agent system update: Add comprehensive functional specification document and automated documentation agent
 **Date:** 2025-09-13
 **Impact:** High
@@ -249,26 +234,6 @@ GOVERNANCE_METRICS = {
 ---
 
 ## 🎯 **Core Features**
-### New Feature: New feature: Implement automated documentation updating system with scheduler and setup guide
-**Added:** 2025-09-13
-**Status:** Recently implemented
-
-
-### New Feature: New feature: Add comprehensive appendix with API keys, tech stack, URLs, and technical configuration details
-**Added:** 2025-09-13
-**Status:** Recently implemented
-
-
-### New Feature: New feature: Update requirements.txt with all G-P implementation dependencies
-**Added:** 2025-09-13
-**Status:** Recently implemented
-
-
-### New Feature: New feature: Add comprehensive implementation progress report for G-P requirements completion
-**Added:** 2025-09-13
-**Status:** Recently implemented
-
-
 <!-- UI Update: UI component update: Complete rebranding to AnNi AI - HR made simple - 2025-09-13 -->
 
 <!-- UI Update: UI component update: Complete rebranding to AnNi AI - HR made simple - 2025-09-13 -->
@@ -854,17 +819,13 @@ ENVIRONMENTS = {
 ## 🏷️ **Version History**
 
 | Version | Date | Changes | Author |
-|---------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+|---------| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
 | 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+|------| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
 | 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+|------| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
 | 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
+---|------| 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
 | 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
 --|
 | 1.0 | Dec 2024 | Initial functional specification | System |
@@ -909,13 +870,7 @@ ENVIRONMENTS = {
 #### **Multi-LLM Orchestration Providers**
 
 | Provider | API Key | Usage Limit | Purpose | Status |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
--|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
---|
+|----------|---------|-------------|---------|--------|
 | **OpenRouter** | `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` | 50 requests/day (FREE) | DeepSeek R1/V3 models for complex reasoning | ✅ Active |
 | **Groq** | `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` | 14,400 requests/day (FREE) | Llama 3.3 70B, Llama 3.1 8B for fast inference | ✅ Active |
 | **OpenAI** | `your_openai_api_key_here` | Pay-per-use | GPT-4, GPT-3.5-turbo for premium features | ⏳ Pending |
@@ -925,10 +880,7 @@ ENVIRONMENTS = {
 #### **Authentication & Security**
 
 | Component | Key/Token | Purpose |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
------|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
------|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|
+|-----------|-----------|---------|
 | **Flask Secret Key** | `anni-ai-hr-made-simple-secret-key-2025` | Session management and CSRF protection |
 | **JWT Secret Key** | `anni-ai-jwt-secret-key-hr-platform` | JSON Web Token signing and verification |
 | **Google OAuth** | Client ID/Secret (configured separately) | Single Sign-On authentication |
@@ -938,10 +890,7 @@ ENVIRONMENTS = {
 #### **Production Deployment**
 
 | Service | URL | Status | Purpose |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
---|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|
+|---------|-----|--------|---------|
 | **Frontend (Vercel)** | `https://hr-advisor-app.vercel.app` | 🟢 Live | React application hosting |
 | **Backend (Render)** | `https://hr-advisor-backend.onrender.com` | 🟢 Live | Flask API server |
 | **Database** | SQLite (local to backend) | 🟢 Active | Employee and user data storage |
@@ -949,12 +898,7 @@ ENVIRONMENTS = {
 #### **API Endpoints**
 
 | Endpoint | Method | Purpose | Authentication |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
---|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|
+|----------|--------|---------|----------------|
 | `/api/auth/login` | POST | User authentication | None |
 | `/api/auth/register` | POST | User registration | None |
 | `/api/auth/google` | POST | Google OAuth login | None |
@@ -968,9 +912,7 @@ ENVIRONMENTS = {
 #### **Development URLs**
 
 | Service | URL | Purpose |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|
+|---------|-----|---------|
 | **Local Frontend** | `http://localhost:5173` | Vite development server |
 | **Local Backend** | `http://localhost:5000` | Flask development server |
 | **Local Database** | `sqlite:///hr_advisor.db` | SQLite database file |
@@ -980,13 +922,7 @@ ENVIRONMENTS = {
 #### **Frontend Architecture**
 
 | Technology | Version | Purpose | Configuration |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|
+|------------|---------|---------|---------------|
 | **React** | 18.2.0 | UI framework | Created with Vite template |
 | **Vite** | 4.4.5 | Build tool and dev server | Hot reload, fast builds |
 | **Tailwind CSS** | 3.3.0 | Utility-first styling | Custom color palette, responsive design |
@@ -1020,13 +956,7 @@ frontend/
 #### **Backend Architecture**
 
 | Technology | Version | Purpose | Configuration |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|
+|------------|---------|---------|---------------|
 | **Flask** | 2.3.3 | Web framework | CORS enabled, JSON responses |
 | **SQLAlchemy** | 2.0.21 | ORM and database toolkit | SQLite database, model definitions |
 | **Flask-JWT-Extended** | 4.5.3 | JWT authentication | Token-based auth with refresh |
@@ -1057,11 +987,7 @@ backend/
 #### **Database Schema**
 
 | Table | Purpose | Key Fields |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
--|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|
+|-------|---------|------------|
 | **users** | User authentication | id, email, password_hash, role, created_at |
 | **employees** | Employee records | employee_id, first_name, last_name, email, position, department, hire_date, salary, country, performance_rating, engagement_score |
 | **ai_usage_logs** | AI governance tracking | log_id, user_id, operation_type, provider_used, query_hash, response_time, confidence_score |
@@ -1073,15 +999,7 @@ backend/
 #### **Multi-LLM Orchestration Strategy**
 
 | Provider | Models Used | Specialization | Request Routing Logic |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
--|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|
+|----------|-------------|----------------|----------------------|
 | **DeepSeek (OpenRouter)** | R1, V3 | Complex reasoning, legal analysis | Legal queries, policy interpretation |
 | **Groq** | Llama 3.3 70B, Llama 3.1 8B | Fast inference, general HR | Quick responses, employee queries |
 | **Together AI** | Llama 3.2 11B | Unlimited free tier | High-volume processing |
@@ -1110,14 +1028,7 @@ def select_ai_provider(query_type, complexity, urgency, user_tier):
 #### **Automated Processes**
 
 | Workflow Type | Trigger | Steps | Automation Level |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
--|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|
+|---------------|---------|-------|------------------|
 | **Employee Onboarding** | New hire created | Welcome email → Document collection → Training schedule → Buddy assignment | 90% automated |
 | **Performance Review** | Quarterly schedule | Self-assessment → Peer feedback → Manager review → Goal setting | 75% automated |
 | **Compliance Audit** | Policy changes | Data collection → Gap analysis → Risk assessment → Action plan | 60% automated |
@@ -1126,17 +1037,7 @@ def select_ai_provider(query_type, complexity, urgency, user_tier):
 #### **Document Generation Templates**
 
 | Document Type | Template Source | Customization Fields | Legal Compliance |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|
+|---------------|----------------|---------------------|------------------|
 | **Employment Contract** | Country-specific templates | Name, position, salary, start date, benefits | ✅ 13 countries |
 | **Performance Review** | Standardized forms | Goals, ratings, feedback, development plans | ✅ Best practices |
 | **Policy Documents** | Legal requirement templates | Company info, local laws, effective dates | ✅ Regulatory compliance |
@@ -1147,15 +1048,7 @@ def select_ai_provider(query_type, complexity, urgency, user_tier):
 #### **HR Analytics Metrics**
 
 | Category | Metrics Tracked | Data Sources | Update Frequency |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
---|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|
+|----------|----------------|--------------|------------------|
 | **Workforce Overview** | Headcount, growth trends, demographics | Employee database | Real-time |
 | **Performance Analytics** | Ratings distribution, top performers, improvement areas | Performance reviews | Monthly |
 | **Retention & Engagement** | Turnover rates, retention risk, engagement scores | Employee surveys, exit data | Weekly |
@@ -1164,14 +1057,7 @@ def select_ai_provider(query_type, complexity, urgency, user_tier):
 #### **AI Governance Metrics**
 
 | Metric | Purpose | Tracking Method | Alert Thresholds |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
---|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|
+|--------|---------|----------------|------------------|
 | **Response Accuracy** | Quality assurance | Human validation feedback | <85% accuracy |
 | **Bias Detection** | Fairness monitoring | Demographic analysis of recommendations | Bias score >0.3 |
 | **System Reliability** | Uptime monitoring | Error rates, response times | >5% error rate |
@@ -1182,12 +1068,7 @@ def select_ai_provider(query_type, complexity, urgency, user_tier):
 #### **Data Protection Measures**
 
 | Component | Security Method | Implementation |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
------|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|
+|-----------|----------------|----------------|
 | **Password Storage** | Bcrypt hashing | Salt rounds: 12 |
 | **API Authentication** | JWT tokens | 24-hour expiry, refresh tokens |
 | **Database Encryption** | SQLite encryption | File-level encryption |
@@ -1197,13 +1078,7 @@ def select_ai_provider(query_type, complexity, urgency, user_tier):
 #### **Compliance Standards**
 
 | Regulation | Coverage | Implementation Status |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|
+|------------|----------|----------------------|
 | **GDPR** | EU data protection | ✅ Data consent, right to deletion |
 | **PDPA** | Singapore/Malaysia privacy | ✅ Data minimization, consent |
 | **CCPA** | California privacy | ✅ Data transparency, opt-out |
@@ -1215,11 +1090,7 @@ def select_ai_provider(query_type, complexity, urgency, user_tier):
 #### **CI/CD Pipeline**
 
 | Stage | Tool | Configuration | Trigger |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
--|-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|
+|-------|-----|---------------|---------|
 | **Source Control** | GitHub | Private repository | Code commits |
 | **Frontend Build** | Vercel | Automatic deployment | Main branch push |
 | **Backend Deploy** | Render | Docker container | Main branch push |
@@ -1229,11 +1100,7 @@ def select_ai_provider(query_type, complexity, urgency, user_tier):
 #### **Environment Variables**
 
 | Variable | Purpose | Example Value |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|
+|----------|---------|---------------|
 | `OPENROUTER_API_KEY` | DeepSeek model access | `sk-or-v1-...` |
 | `GROQ_API_KEY` | Llama model access | `gsk_...` |
 | `SECRET_KEY` | Flask session security | `anni-ai-hr-...` |
@@ -1245,13 +1112,7 @@ def select_ai_provider(query_type, complexity, urgency, user_tier):
 #### **Current Capacity**
 
 | Component | Current Limit | Scaling Strategy |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
------|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|
+|-----------|---------------|------------------|
 | **Frontend** | Unlimited (Vercel) | Global CDN, automatic scaling |
 | **Backend** | 512MB RAM (Render) | Horizontal scaling, load balancing |
 | **Database** | SQLite file | Migration to PostgreSQL for scale |
@@ -1260,11 +1121,7 @@ def select_ai_provider(query_type, complexity, urgency, user_tier):
 #### **Monitoring & Alerts**
 
 | Metric | Threshold | Alert Method |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
---|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
------|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
---|
+|--------|-----------|--------------|
 | **Response Time** | >2 seconds | Email notification |
 | **Error Rate** | >5% | Slack alert |
 | **API Quota** | >80% usage | Dashboard warning |
@@ -1289,10 +1146,7 @@ python src/main.py  # Starts on http://localhost:5000
 #### **Automated Documentation System**
 
 | Component | Purpose | Schedule |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
------|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|
+|-----------|---------|----------|
 | **Documentation Agent** | Auto-update functional spec | On code changes |
 | **Documentation Scheduler** | Scheduled updates | Every 30 minutes |
 | **Backup System** | Version control | Before each update |
@@ -1300,10 +1154,7 @@ python src/main.py  # Starts on http://localhost:5000
 #### **Testing Strategy**
 
 | Test Type | Coverage | Tools |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
------|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
--|
+|-----------|----------|-------|
 | **Unit Tests** | Individual functions | pytest (backend), Jest (frontend) |
 | **Integration Tests** | API endpoints | Postman collections |
 | **E2E Tests** | User workflows | Playwright |
@@ -1314,11 +1165,7 @@ python src/main.py  # Starts on http://localhost:5000
 ## 📚 **APPENDIX B: Version History & Change Log**
 
 | Version | Date | Changes | Author |
-|---------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
---|
+|---------|------|---------|--------|
 | 1.1 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
 | 1.0 | Dec 2024 | Initial comprehensive specification | Development Team |
 
@@ -1329,11 +1176,7 @@ python src/main.py  # Starts on http://localhost:5000
 ### **Support Contacts**
 
 | Role | Contact | Responsibility |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
----|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|
+|------|---------|----------------|
 | **Technical Lead** | development@anni-ai.com | Architecture, API issues |
 | **Product Manager** | product@anni-ai.com | Feature requests, roadmap |
 | **DevOps** | devops@anni-ai.com | Deployment, infrastructure |
@@ -1342,10 +1185,7 @@ python src/main.py  # Starts on http://localhost:5000
 ### **Maintenance Schedule**
 
 | Task | Frequency | Next Due |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
------|------| 1.2 | Sep 2025 | Automated feature updates and enhancements | Auto-update |
-----|
+|------|-----------|----------|
 | **Security Updates** | Monthly | Next month |
 | **Dependency Updates** | Quarterly | Q1 2025 |
 | **Performance Review** | Bi-annually | H1 2025 |
