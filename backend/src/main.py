@@ -26,7 +26,16 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
-CORS(app)
+
+# Configure CORS to allow requests from Vercel frontend
+CORS(app, origins=[
+    "https://hr-advisor-app-otaq.vercel.app",  # New Vercel domain
+    "https://hr-advisor-app.vercel.app",       # Original Vercel domain (if exists)
+    "http://localhost:3000",                   # Local development
+    "http://localhost:5173",                   # Vite dev server
+    "http://127.0.0.1:3000",                   # Local development alternative
+    "http://127.0.0.1:5173"                    # Vite dev server alternative
+], supports_credentials=True)
 
 # Initialize database tables on startup
 def init_database():
