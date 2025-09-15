@@ -1230,14 +1230,16 @@ def index():
 # Production-ready application configuration
 if __name__ == '__main__':
     # Only use development server for local testing
-    # In production, Gunicorn will handle the WSGI application
+    # In production, Render should use: gunicorn --config gunicorn_config.py src.main:app
     import os
+    
     if os.getenv('FLASK_ENV') == 'development':
         app.run(debug=True, host='0.0.0.0', port=5000)
     else:
-        # Production mode - let Gunicorn handle the server
-        print("Production mode: Use Gunicorn to serve this application")
-        print("Command: gunicorn --config gunicorn_config.py main:app")
+        # Production mode - this should not be reached if using proper start command
+        print("WARNING: Running in production mode with Flask dev server")
+        print("Recommended: Use 'gunicorn --config gunicorn_config.py src.main:app' instead")
+        app.run(debug=False, host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
 
 
 
