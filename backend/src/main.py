@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -327,8 +327,8 @@ def send_verification_email(email, token):
             print("SMTP credentials not configured. Email not sent.")
             return False
         
-        # Create verification URL
-        verification_url = f"https://hr-advisor-app.vercel.app/verify-email?token={token}"
+        # Create verification URL - point to backend API endpoint
+        verification_url = f"https://hr-advisor-app.onrender.com/api/auth/verify-email/{token}"
         
         # Create email content
         subject = "Verify Your AnNi AI Account"
@@ -485,31 +485,30 @@ def verify_email(token):
         user = User.query.filter_by(verification_token=token).first()
         
         if not user:
-            return jsonify({'error': 'Invalid verification token'}), 400
+            # Redirect to frontend with error
+            return redirect(f"https://hr-advisor-app-ku25.vercel.app/?verification=invalid")
         
         if user.email_verified:
-            return jsonify({'message': 'Email already verified'}), 200
+            # Redirect to frontend with already verified message
+            return redirect(f"https://hr-advisor-app-ku25.vercel.app/?verification=already_verified")
         
         # Check if token is expired (24 hours)
         if user.verification_sent_at and (datetime.utcnow() - user.verification_sent_at) > timedelta(hours=24):
-            return jsonify({'error': 'Verification token expired'}), 400
+            # Redirect to frontend with expired error
+            return redirect(f"https://hr-advisor-app-ku25.vercel.app/?verification=expired")
         
         # Verify the email
         user.email_verified = True
         user.verification_token = None
         db.session.commit()
         
-        # Create access token for immediate login
-        access_token = create_access_token(identity=user.user_id)
-        
-        return jsonify({
-            'message': 'Email verified successfully! You are now logged in.',
-            'access_token': access_token,
-            'user': user.to_dict()
-        }), 200
+        # Redirect to frontend with success message
+        return redirect(f"https://hr-advisor-app-ku25.vercel.app/?verification=success")
         
     except Exception as e:
-        return jsonify({'error': f'Email verification failed: {str(e)}'}), 500
+        print(f"Email verification error: {str(e)}")
+        # Redirect to frontend with error
+        return redirect(f"https://hr-advisor-app-ku25.vercel.app/?verification=error")
 
 @app.route('/api/auth/resend-verification', methods=['POST'])
 def resend_verification():
