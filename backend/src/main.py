@@ -27,15 +27,18 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
-# Configure CORS to allow requests from Vercel frontend
+# Configure CORS to allow requests from Vercel frontend (flexible configuration)
 CORS(app, origins=[
-    "https://hr-advisor-app-otaq.vercel.app",  # New Vercel domain
-    "https://hr-advisor-app.vercel.app",       # Original Vercel domain (if exists)
+    "https://hr-advisor-app-ku25.vercel.app",  # Current Vercel domain
+    "https://hr-advisor-app-otaq.vercel.app",  # Previous Vercel domain  
+    "https://hr-advisor-app.vercel.app",       # Original Vercel domain
     "http://localhost:3000",                   # Local development
     "http://localhost:5173",                   # Vite dev server
     "http://127.0.0.1:3000",                   # Local development alternative
     "http://127.0.0.1:5173"                    # Vite dev server alternative
-], supports_credentials=True)
+], supports_credentials=True, 
+   allow_headers=['Content-Type', 'Authorization'],
+   methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
 
 # Initialize database tables on startup
 def init_database():
