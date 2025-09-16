@@ -332,6 +332,46 @@ def health():
             'error': str(e)
         }), 500
 
+@app.route('/api/test/hr_advisor', methods=['POST'])
+def test_hr_advisor():
+    """Test endpoint to debug HR advisor issues"""
+    try:
+        data = request.get_json()
+        return jsonify({
+            'status': 'success',
+            'message': 'HR advisor test endpoint working',
+            'received_data': data,
+            'method': request.method
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Test endpoint error: {str(e)}'
+        }), 500
+
+@app.route('/api/test/hr_advisor_auth', methods=['POST'])
+@jwt_required()
+def test_hr_advisor_auth():
+    """Test authenticated endpoint to debug HR advisor auth issues"""
+    try:
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+        data = request.get_json()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'HR advisor authenticated test endpoint working',
+            'user_id': user_id,
+            'user_email': user.email if user else None,
+            'received_data': data,
+            'method': request.method
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Authenticated test endpoint error: {str(e)}'
+        }), 500
+
 @app.route('/api/auth/register', methods=['POST'])
 def register():
     try:
