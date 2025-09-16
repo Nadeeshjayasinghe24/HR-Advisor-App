@@ -880,6 +880,9 @@ def hr_advisor_query():
         
         # Multi-LLM Orchestration for HR advice
         try:
+            # TEMPORARY: Force fallback to test improved responses
+            raise Exception("Testing improved fallback responses")
+            
             # Country-specific HR context
             country_contexts = {
                 'US': 'United States federal and state employment laws, FLSA, FMLA, ADA compliance, OSHA regulations',
