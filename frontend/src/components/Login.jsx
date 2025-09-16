@@ -325,7 +325,7 @@ const Login = ({ onLogin }) => {
                         </li>
                         <li className={`flex items-center ${formData.password && validatePassword(formData.password).hasSymbol ? 'text-green-600' : 'text-gray-500'}`}>
                           <span className="mr-2">{formData.password && validatePassword(formData.password).hasSymbol ? '✓' : '○'}</span>
-                          At least one symbol (!@#$%^&*()_+-=[]{}|;':",./<>?)
+                          At least one symbol (!@#$%^&*()_+-=[]{}|;:&quot;,.&lt;&gt;?)
                         </li>
                       </ul>
                     </div>
