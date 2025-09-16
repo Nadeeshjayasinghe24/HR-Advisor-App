@@ -95,7 +95,7 @@ function App() {
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <Dashboard onPageChange={setCurrentPage} token={token} />
+        return <Dashboard onPageChange={setCurrentPage} token={token} user={user} />
       case 'hr-advisor':
         return <HRAdvisor token={token} />
       case 'employees':
@@ -113,7 +113,7 @@ function App() {
           <p className="text-gray-600 mt-2">Coming soon...</p>
         </div>
       default:
-        return <Dashboard onPageChange={setCurrentPage} token={token} />
+        return <Dashboard onPageChange={setCurrentPage} token={token} user={user} />
     }
   }
 

@@ -12,6 +12,7 @@ import {
   CreditCard,
   Sparkles
 } from 'lucide-react'
+import { getWelcomeMessage, getUserInitials, extractFirstName } from '../utils/nameUtils'
 import '../App.css'
 
 const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
@@ -69,10 +70,10 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
           <div className="border-t border-gray-200/50 p-4 bg-gradient-to-r from-gray-50 to-blue-50">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">{user?.username?.charAt(0)?.toUpperCase()}</span>
+                <span className="text-white font-semibold text-sm">{getUserInitials(user?.username)}</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-gray-900">{user?.username}</p>
+                <p className="text-sm font-semibold text-gray-900">{extractFirstName(user?.username)}</p>
                 <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
               <Button
@@ -117,10 +118,10 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
           <div className="border-t border-gray-200/50 p-4 bg-gradient-to-r from-gray-50 to-blue-50">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">{user?.username?.charAt(0)?.toUpperCase()}</span>
+                <span className="text-white font-semibold text-sm">{getUserInitials(user?.username)}</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-gray-900">{user?.username}</p>
+                <p className="text-sm font-semibold text-gray-900">{extractFirstName(user?.username)}</p>
                 <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
               <Button
@@ -154,10 +155,10 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold text-xs">{user?.username?.charAt(0)?.toUpperCase()}</span>
+                  <span className="text-white font-semibold text-xs">{getUserInitials(user?.username)}</span>
                 </div>
                 <span className="text-sm font-medium text-gray-700">
-                  Welcome back, <span className="text-orange-600">{user?.username}</span>
+                  {getWelcomeMessage(user?.username)}
                 </span>
               </div>
             </div>

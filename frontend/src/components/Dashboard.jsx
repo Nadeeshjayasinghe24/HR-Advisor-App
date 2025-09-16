@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import DailyTips from './DailyTips'
+import { getContextualWelcome, getMotivationalMessage, extractFirstName } from '../utils/nameUtils'
 import { 
   Users, 
   MessageSquare, 
@@ -13,7 +14,7 @@ import {
 } from 'lucide-react'
 import '../App.css'
 
-const Dashboard = ({ onPageChange, token }) => {
+const Dashboard = ({ onPageChange, token, user }) => {
   const [stats, setStats] = useState({
     totalEmployees: 0,
     activeEmployees: 0,
@@ -103,8 +104,13 @@ const Dashboard = ({ onPageChange, token }) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <Button onClick={() => onPageChange('hr-advisor')}>
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">
+            {getContextualWelcome(user?.username, 'dashboard')}
+          </h1>
+          <p className="text-gray-600 mt-1">{getMotivationalMessage(user?.username)}</p>
+        </div>
+        <Button onClick={() => onPageChange('hr-advisor')} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg">
           <MessageSquare className="mr-2 h-4 w-4" />
           Ask HR Advisor
         </Button>
