@@ -1,6 +1,5 @@
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify, redirect, make_response
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import uuid
@@ -12,6 +11,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from urllib.parse import urlparse
+import re
 from llm_orchestrator import orchestrator
 from workflow_automation_agent import workflow_agent
 from document_generation_agent import document_agent
@@ -28,23 +28,45 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
-# Configure CORS to allow requests from all Vercel deployments
-CORS(app, origins=[
-    "https://hr-advisor-app-s4lo.vercel.app",   # Latest Vercel domain
-    "https://hr-advisor-app-ghqv.vercel.app",   # Previous Vercel domain
-    "https://hr-advisor-app-hvn4.vercel.app",   # Previous Vercel domain
-    "https://hr-advisor-app-hau5.vercel.app",   # Previous Vercel domain
-    "https://hr-advisor-app-932u.vercel.app",   # Previous Vercel domain
-    "https://hr-advisor-app-ku25.vercel.app",   # Previous Vercel domain
-    "https://hr-advisor-app-otaq.vercel.app",   # Previous Vercel domain  
-    "https://hr-advisor-app.vercel.app",        # Original Vercel domain
-    "http://localhost:3000",                    # Local development
-    "http://localhost:5173",                    # Vite dev server
-    "http://127.0.0.1:3000",                    # Local development alternative
-    "http://127.0.0.1:5173"                     # Vite dev server alternative
-], supports_credentials=True, 
-   allow_headers=['Content-Type', 'Authorization'],
-   methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+# Automatic CORS handler that works with ANY Vercel deployment URL
+@app.after_request
+def after_request(response):
+    origin = request.headers.get('Origin')
+    if origin:
+        # Allow any hr-advisor-app Vercel deployment automatically
+        if re.match(r'^https://hr-advisor-app(-[a-z0-9]+)?\.vercel\.app$', origin):
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        # Allow localhost for development
+        elif 'localhost' in origin or '127.0.0.1' in origin:
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return response
+
+# Handle preflight OPTIONS requests for CORS
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        origin = request.headers.get('Origin')
+        response = make_response()
+        if origin:
+            # Allow any hr-advisor-app Vercel deployment automatically
+            if re.match(r'^https://hr-advisor-app(-[a-z0-9]+)?\.vercel\.app$', origin):
+                response.headers['Access-Control-Allow-Origin'] = origin
+                response.headers['Access-Control-Allow-Credentials'] = 'true'
+                response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+                response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            # Allow localhost for development
+            elif 'localhost' in origin or '127.0.0.1' in origin:
+                response.headers['Access-Control-Allow-Origin'] = origin
+                response.headers['Access-Control-Allow-Credentials'] = 'true'
+                response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+                response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        return response
 
 # Initialize database tables on startup
 def init_database():
@@ -252,30 +274,31 @@ init_database()
 
 def get_frontend_url():
     """
-    Get frontend URL from environment variable (production best practice).
-    Falls back to request context only for development.
+    Automatically detect frontend URL from request or environment variable.
+    Works with any Vercel deployment URL automatically.
     """
-    # Production: Use environment variable (most reliable)
+    # Production: Use environment variable if set
     frontend_url = os.getenv('FRONTEND_URL')
     if frontend_url:
         return frontend_url.rstrip('/')
     
-    # Development: Try to detect from request headers for local development
+    # Automatic detection: Get from request headers (works for any Vercel URL)
     if request and hasattr(request, 'headers'):
+        # Check Origin header first (most reliable for CORS requests)
         origin = request.headers.get('Origin')
-        if origin and ('localhost' in origin or '127.0.0.1' in origin):
+        if origin and ('hr-advisor-app' in origin or 'localhost' in origin or '127.0.0.1' in origin):
             return origin
         
-        # Check Referer header for local development
+        # Check Referer header as fallback
         referer = request.headers.get('Referer')
-        if referer and ('localhost' in referer or '127.0.0.1' in referer):
+        if referer and ('hr-advisor-app' in referer or 'localhost' in referer or '127.0.0.1' in referer):
             parsed = urlparse(referer)
             return f"{parsed.scheme}://{parsed.netloc}"
     
-    # Production fallback - log warning and use current deployment
-    print("WARNING: FRONTEND_URL environment variable not set. Using fallback URL.")
-    print("Please set FRONTEND_URL in your deployment environment variables.")
-    return "https://hr-advisor-app-s4lo.vercel.app"
+    # Emergency fallback - should rarely be used with automatic detection
+    print("WARNING: Could not detect frontend URL from request headers.")
+    print("Consider setting FRONTEND_URL environment variable for reliability.")
+    return "https://hr-advisor-app-9a6m.vercel.app"  # Current deployment
 
 def get_redirect_url(verification_status):
     """
