@@ -12,6 +12,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from urllib.parse import urlparse
+import re
 from llm_orchestrator import orchestrator
 from workflow_automation_agent import workflow_agent
 from document_generation_agent import document_agent
@@ -28,18 +29,43 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
-# Configure CORS to allow requests from Vercel frontend (flexible configuration)
-CORS(app, origins=[
-    "https://hr-advisor-app-ku25.vercel.app",  # Current Vercel domain
-    "https://hr-advisor-app-otaq.vercel.app",  # Previous Vercel domain  
-    "https://hr-advisor-app.vercel.app",       # Original Vercel domain
-    "http://localhost:3000",                   # Local development
-    "http://localhost:5173",                   # Vite dev server
-    "http://127.0.0.1:3000",                   # Local development alternative
-    "http://127.0.0.1:5173"                    # Vite dev server alternative
-], supports_credentials=True, 
-   allow_headers=['Content-Type', 'Authorization'],
-   methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+def is_allowed_origin(origin):
+    """
+    Dynamically validate CORS origins to allow Vercel deployments and local development.
+    """
+    if not origin:
+        return False
+    
+    # Allow local development
+    local_patterns = [
+        r'^http://localhost:\d+$',
+        r'^http://127\.0\.0\.1:\d+$'
+    ]
+    
+    # Allow Vercel deployments (hr-advisor-app-*.vercel.app)
+    vercel_pattern = r'^https://hr-advisor-app(-[a-z0-9]+)?\.vercel\.app$'
+    
+    # Check against patterns
+    for pattern in local_patterns + [vercel_pattern]:
+        if re.match(pattern, origin):
+            return True
+    
+    # Explicit allowed origins (fallback)
+    allowed_origins = [
+        "https://hr-advisor-app.vercel.app",
+        "https://hr-advisor-app-932u.vercel.app",
+        "https://hr-advisor-app-ku25.vercel.app",
+        "https://hr-advisor-app-otaq.vercel.app"
+    ]
+    
+    return origin in allowed_origins
+
+# Configure CORS with dynamic origin validation
+CORS(app, 
+     origins=is_allowed_origin,  # Use function for dynamic validation
+     supports_credentials=True, 
+     allow_headers=['Content-Type', 'Authorization'],
+     methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
 
 # Initialize database tables on startup
 def init_database():
