@@ -252,28 +252,29 @@ init_database()
 
 def get_frontend_url():
     """
-    Dynamically determine the frontend URL from environment variable or request headers.
-    Falls back to a default if none found.
+    Get frontend URL from environment variable (production best practice).
+    Falls back to request context only for development.
     """
-    # First, try environment variable (most reliable for production)
+    # Production: Use environment variable (most reliable)
     frontend_url = os.getenv('FRONTEND_URL')
     if frontend_url:
         return frontend_url.rstrip('/')
     
-    # Try to get from request context (Origin or Referer header)
-    if request:
-        # Check Origin header first (most reliable for CORS requests)
+    # Development: Try to detect from request headers for local development
+    if request and hasattr(request, 'headers'):
         origin = request.headers.get('Origin')
-        if origin:
+        if origin and ('localhost' in origin or '127.0.0.1' in origin):
             return origin
         
-        # Check Referer header as fallback
+        # Check Referer header for local development
         referer = request.headers.get('Referer')
-        if referer:
+        if referer and ('localhost' in referer or '127.0.0.1' in referer):
             parsed = urlparse(referer)
             return f"{parsed.scheme}://{parsed.netloc}"
     
-    # Fallback to current working URL (updated for latest deployment)
+    # Production fallback - log warning and use current deployment
+    print("WARNING: FRONTEND_URL environment variable not set. Using fallback URL.")
+    print("Please set FRONTEND_URL in your deployment environment variables.")
     return "https://hr-advisor-app-s4lo.vercel.app"
 
 def get_redirect_url(verification_status):
