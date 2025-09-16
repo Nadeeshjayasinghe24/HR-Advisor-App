@@ -11,6 +11,7 @@ import secrets
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from urllib.parse import urlparse
 from llm_orchestrator import orchestrator
 from workflow_automation_agent import workflow_agent
 from document_generation_agent import document_agent
@@ -244,6 +245,39 @@ class Employee(db.Model):
 # Initialize database on startup
 init_database()
 
+def get_frontend_url():
+    """
+    Dynamically determine the frontend URL from environment variable or request headers.
+    Falls back to a default if none found.
+    """
+    # First, try environment variable (most reliable for production)
+    frontend_url = os.getenv('FRONTEND_URL')
+    if frontend_url:
+        return frontend_url.rstrip('/')
+    
+    # Try to get from request context (Origin or Referer header)
+    if request:
+        # Check Origin header first (most reliable for CORS requests)
+        origin = request.headers.get('Origin')
+        if origin:
+            return origin
+        
+        # Check Referer header as fallback
+        referer = request.headers.get('Referer')
+        if referer:
+            parsed = urlparse(referer)
+            return f"{parsed.scheme}://{parsed.netloc}"
+    
+    # Fallback to known working URL (can be updated as needed)
+    return "https://hr-advisor-app-otaq.vercel.app"
+
+def get_redirect_url(verification_status):
+    """
+    Generate redirect URL with verification status parameter.
+    """
+    frontend_url = get_frontend_url()
+    return f"{frontend_url}/?verification={verification_status}"
+
 # Routes
 @app.route('/api/health', methods=['GET'])
 def health():
@@ -284,6 +318,9 @@ def register():
         # Generate verification token
         verification_token = secrets.token_urlsafe(32)
         
+        # Get frontend URL from request context for later use
+        frontend_url = get_frontend_url()
+        
         # Create new user (unverified)
         user = User(
             email=data['email'],
@@ -298,7 +335,7 @@ def register():
         
         # Send verification email (simplified for now)
         try:
-            send_verification_email(user.email, verification_token)
+            send_verification_email(user.email, verification_token, frontend_url)
         except Exception as e:
             print(f"Failed to send verification email: {str(e)}")
             # Don't fail registration if email fails
@@ -313,7 +350,7 @@ def register():
         db.session.rollback()
         return jsonify({'error': f'Registration failed: {str(e)}'}), 500
 
-def send_verification_email(email, token):
+def send_verification_email(email, token, frontend_url=None):
     """Send verification email to user"""
     try:
         # Email configuration from environment variables
@@ -326,6 +363,10 @@ def send_verification_email(email, token):
         if not smtp_username or not smtp_password:
             print("SMTP credentials not configured. Email not sent.")
             return False
+        
+        # Use provided frontend_url or detect dynamically
+        if not frontend_url:
+            frontend_url = get_frontend_url()
         
         # Create verification URL - point to backend API endpoint
         verification_url = f"https://hr-advisor-app.onrender.com/api/auth/verify-email/{token}"
@@ -486,16 +527,16 @@ def verify_email(token):
         
         if not user:
             # Redirect to frontend with error
-            return redirect(f"https://hr-advisor-app-otaq.vercel.app/?verification=invalid")
+            return redirect(get_redirect_url('invalid'))
         
         if user.email_verified:
             # Redirect to frontend with already verified message
-            return redirect(f"https://hr-advisor-app-otaq.vercel.app/?verification=already_verified")
+            return redirect(get_redirect_url('already_verified'))
         
         # Check if token is expired (24 hours)
         if user.verification_sent_at and (datetime.utcnow() - user.verification_sent_at) > timedelta(hours=24):
             # Redirect to frontend with expired error
-            return redirect(f"https://hr-advisor-app-otaq.vercel.app/?verification=expired")
+            return redirect(get_redirect_url('expired'))
         
         # Verify the email
         user.email_verified = True
@@ -503,12 +544,12 @@ def verify_email(token):
         db.session.commit()
         
         # Redirect to frontend with success message
-        return redirect(f"https://hr-advisor-app-otaq.vercel.app/?verification=success")
+        return redirect(get_redirect_url('success'))
         
     except Exception as e:
         print(f"Email verification error: {str(e)}")
         # Redirect to frontend with error
-        return redirect(f"https://hr-advisor-app-otaq.vercel.app/?verification=error")
+        return redirect(get_redirect_url('error'))
 
 @app.route('/api/auth/resend-verification', methods=['POST'])
 def resend_verification():
@@ -532,9 +573,12 @@ def resend_verification():
         user.verification_sent_at = datetime.utcnow()
         db.session.commit()
         
+        # Get frontend URL from request context
+        frontend_url = get_frontend_url()
+        
         # Send verification email
         try:
-            send_verification_email(user.email, verification_token)
+            send_verification_email(user.email, verification_token, frontend_url)
         except Exception as e:
             print(f"Failed to send verification email: {str(e)}")
             return jsonify({'error': 'Failed to send verification email'}), 500
