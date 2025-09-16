@@ -486,16 +486,16 @@ def verify_email(token):
         
         if not user:
             # Redirect to frontend with error
-            return redirect(f"https://hr-advisor-app-ku25.vercel.app/?verification=invalid")
+            return redirect(f"https://hr-advisor-app-otaq.vercel.app/?verification=invalid")
         
         if user.email_verified:
             # Redirect to frontend with already verified message
-            return redirect(f"https://hr-advisor-app-ku25.vercel.app/?verification=already_verified")
+            return redirect(f"https://hr-advisor-app-otaq.vercel.app/?verification=already_verified")
         
         # Check if token is expired (24 hours)
         if user.verification_sent_at and (datetime.utcnow() - user.verification_sent_at) > timedelta(hours=24):
             # Redirect to frontend with expired error
-            return redirect(f"https://hr-advisor-app-ku25.vercel.app/?verification=expired")
+            return redirect(f"https://hr-advisor-app-otaq.vercel.app/?verification=expired")
         
         # Verify the email
         user.email_verified = True
@@ -503,12 +503,12 @@ def verify_email(token):
         db.session.commit()
         
         # Redirect to frontend with success message
-        return redirect(f"https://hr-advisor-app-ku25.vercel.app/?verification=success")
+        return redirect(f"https://hr-advisor-app-otaq.vercel.app/?verification=success")
         
     except Exception as e:
         print(f"Email verification error: {str(e)}")
         # Redirect to frontend with error
-        return redirect(f"https://hr-advisor-app-ku25.vercel.app/?verification=error")
+        return redirect(f"https://hr-advisor-app-otaq.vercel.app/?verification=error")
 
 @app.route('/api/auth/resend-verification', methods=['POST'])
 def resend_verification():

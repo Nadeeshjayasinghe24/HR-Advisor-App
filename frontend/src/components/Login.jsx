@@ -20,10 +20,29 @@ const Login = ({ onLogin }) => {
     confirmPassword: ''
   })
 
+  // Password validation function
+  const validatePassword = (password) => {
+    const minLength = password.length >= 12
+    const hasUppercase = /[A-Z]/.test(password)
+    const hasLowercase = /[a-z]/.test(password)
+    const hasNumber = /\d/.test(password)
+    const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+    
+    return {
+      minLength,
+      hasUppercase,
+      hasLowercase,
+      hasNumber,
+      hasSymbol,
+      isValid: minLength && hasUppercase && hasLowercase && hasNumber && hasSymbol
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSuccess('')
 
     // Check required fields
     if (!formData.email || !formData.password) {
@@ -47,10 +66,13 @@ const Login = ({ onLogin }) => {
     }
 
     // Password strength validation for signup
-    if (!isLogin && formData.password.length < 6) {
-      setError('Password must be at least 6 characters long')
-      setLoading(false)
-      return
+    if (!isLogin) {
+      const passwordCheck = validatePassword(formData.password)
+      if (!passwordCheck.isValid) {
+        setError('Password does not meet the required criteria. Please check the password requirements below.')
+        setLoading(false)
+        return
+      }
     }
 
     try {
@@ -75,9 +97,9 @@ const Login = ({ onLogin }) => {
           localStorage.setItem('user', JSON.stringify(data.user))
           onLogin(data.user, data.access_token)
         } else {
-          setIsLogin(true)
-          setError('Registration successful! Please log in.')
-          setFormData({ username: '', email: '', password: '', confirmPassword: '' })
+          // Registration successful - show verification email message
+          setSuccess(`Registration successful! A verification email has been sent to ${formData.email}. Please check your email (including spam folder) and click the verification link to activate your account.`)
+          setFormData({ email: '', password: '', confirmPassword: '' })
         }
       } else {
         setError(data.error || 'An error occurred')
@@ -281,6 +303,33 @@ const Login = ({ onLogin }) => {
                     onChange={handleInputChange}
                     placeholder="Enter your password"
                   />
+                  {!isLogin && (
+                    <div className="mt-2 text-sm text-gray-600">
+                      <p className="font-medium mb-1">Password Requirements:</p>
+                      <ul className="space-y-1">
+                        <li className={`flex items-center ${formData.password && validatePassword(formData.password).minLength ? 'text-green-600' : 'text-gray-500'}`}>
+                          <span className="mr-2">{formData.password && validatePassword(formData.password).minLength ? '✓' : '○'}</span>
+                          At least 12 characters
+                        </li>
+                        <li className={`flex items-center ${formData.password && validatePassword(formData.password).hasUppercase ? 'text-green-600' : 'text-gray-500'}`}>
+                          <span className="mr-2">{formData.password && validatePassword(formData.password).hasUppercase ? '✓' : '○'}</span>
+                          At least one uppercase letter
+                        </li>
+                        <li className={`flex items-center ${formData.password && validatePassword(formData.password).hasLowercase ? 'text-green-600' : 'text-gray-500'}`}>
+                          <span className="mr-2">{formData.password && validatePassword(formData.password).hasLowercase ? '✓' : '○'}</span>
+                          At least one lowercase letter
+                        </li>
+                        <li className={`flex items-center ${formData.password && validatePassword(formData.password).hasNumber ? 'text-green-600' : 'text-gray-500'}`}>
+                          <span className="mr-2">{formData.password && validatePassword(formData.password).hasNumber ? '✓' : '○'}</span>
+                          At least one number
+                        </li>
+                        <li className={`flex items-center ${formData.password && validatePassword(formData.password).hasSymbol ? 'text-green-600' : 'text-gray-500'}`}>
+                          <span className="mr-2">{formData.password && validatePassword(formData.password).hasSymbol ? '✓' : '○'}</span>
+                          At least one symbol (!@#$%^&*()_+-=[]{}|;':",./<>?)
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
                 {!isLogin && (
@@ -295,6 +344,9 @@ const Login = ({ onLogin }) => {
                       onChange={handleInputChange}
                       placeholder="Confirm your password"
                     />
+                    {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                      <p className="mt-1 text-sm text-red-600">Passwords do not match</p>
+                    )}
                   </div>
                 )}
 
