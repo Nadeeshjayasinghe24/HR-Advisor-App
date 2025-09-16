@@ -46,7 +46,13 @@ const EmployeeTable = ({ token }) => {
     status: 'Active',
     address: '',
     emergency_contact_name: '',
-    emergency_contact_phone: ''
+    emergency_contact_phone: '',
+    // Demographic fields
+    date_of_birth: '',
+    gender: '',
+    ethnicity: '',
+    nationality: '',
+    marital_status: ''
   })
 
   const countries = [
@@ -179,7 +185,13 @@ const EmployeeTable = ({ token }) => {
       status: 'Active',
       address: '',
       emergency_contact_name: '',
-      emergency_contact_phone: ''
+      emergency_contact_phone: '',
+      // Demographic fields
+      date_of_birth: '',
+      gender: '',
+      ethnicity: '',
+      nationality: '',
+      marital_status: ''
     })
     setEditingEmployee(null)
   }
@@ -234,7 +246,13 @@ const EmployeeTable = ({ token }) => {
       status: employee.status || 'Active',
       address: employee.address || '',
       emergency_contact_name: employee.emergency_contact_name || '',
-      emergency_contact_phone: employee.emergency_contact_phone || ''
+      emergency_contact_phone: employee.emergency_contact_phone || '',
+      // Demographic fields
+      date_of_birth: employee.date_of_birth || '',
+      gender: employee.gender || '',
+      ethnicity: employee.ethnicity || '',
+      nationality: employee.nationality || '',
+      marital_status: employee.marital_status || ''
     })
     setEditingEmployee(employee)
     setShowAddDialog(true)
@@ -518,6 +536,79 @@ const EmployeeTable = ({ token }) => {
                         onChange={handleInputChange}
                         placeholder="+1 (555) 987-6543"
                       />
+                    </div>
+                  </div>
+
+                  {/* Demographics Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Demographics (Optional)</h3>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="date_of_birth">Date of Birth</Label>
+                        <Input
+                          id="date_of_birth"
+                          name="date_of_birth"
+                          type="date"
+                          value={formData.date_of_birth}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="gender">Gender</Label>
+                        <Select value={formData.gender} onValueChange={(value) => handleInputChange({ target: { name: 'gender', value } })}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Male">Male</SelectItem>
+                            <SelectItem value="Female">Female</SelectItem>
+                            <SelectItem value="Non-binary">Non-binary</SelectItem>
+                            <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="ethnicity">Ethnicity</Label>
+                        <Input
+                          id="ethnicity"
+                          name="ethnicity"
+                          value={formData.ethnicity}
+                          onChange={handleInputChange}
+                          placeholder="e.g., Asian, Hispanic, Caucasian"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="nationality">Nationality</Label>
+                        <Input
+                          id="nationality"
+                          name="nationality"
+                          value={formData.nationality}
+                          onChange={handleInputChange}
+                          placeholder="e.g., American, British, Singaporean"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="marital_status">Marital Status</Label>
+                      <Select value={formData.marital_status} onValueChange={(value) => handleInputChange({ target: { name: 'marital_status', value } })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select marital status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Single">Single</SelectItem>
+                          <SelectItem value="Married">Married</SelectItem>
+                          <SelectItem value="Divorced">Divorced</SelectItem>
+                          <SelectItem value="Widowed">Widowed</SelectItem>
+                          <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   

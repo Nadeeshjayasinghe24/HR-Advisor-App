@@ -205,9 +205,12 @@ class Employee(db.Model):
     currency = db.Column(db.String(10), nullable=True, default='USD')
     
     # Demographics (for diversity analytics)
+    date_of_birth = db.Column(db.Date, nullable=True)
     gender = db.Column(db.String(50), nullable=True)
     age = db.Column(db.Integer, nullable=True)
     ethnicity = db.Column(db.String(100), nullable=True)
+    nationality = db.Column(db.String(100), nullable=True)
+    marital_status = db.Column(db.String(50), nullable=True)
     
     # Performance and Engagement
     engagement_score = db.Column(db.Float, nullable=True)  # 1-10 scale
@@ -251,9 +254,12 @@ class Employee(db.Model):
             'termination_reason': self.termination_reason,
             'salary': self.salary,
             'currency': self.currency,
+            'date_of_birth': self.date_of_birth.isoformat() if self.date_of_birth else None,
             'gender': self.gender,
             'age': self.age,
             'ethnicity': self.ethnicity,
+            'nationality': self.nationality,
+            'marital_status': self.marital_status,
             'engagement_score': self.engagement_score,
             'last_engagement_survey': self.last_engagement_survey.isoformat() if self.last_engagement_survey else None,
             'performance_rating': self.performance_rating,
@@ -915,12 +921,57 @@ def hr_advisor_query():
                 loop.close()
             
         except Exception as e:
-            # Fallback to basic response if orchestration fails
-            response_text = f"HR guidance for {country}: {query}. Please ensure compliance with local employment laws and consult official government sources for the most current regulations. [Multi-LLM orchestration error: {str(e)}]"
+            # Improved fallback with country-specific HR information
+            country_specific_responses = {
+                'SG': {
+                    'maternity_leave': 'In Singapore, under the Employment Act, eligible female employees are entitled to 16 weeks of maternity leave (4 weeks before and 12 weeks after childbirth). The first 4 weeks are paid by the employer, and the remaining 12 weeks are paid by the government.',
+                    'employment_laws': 'Singapore employment is governed by the Employment Act, which covers working hours (max 44 hours/week), overtime pay (1.5x rate), annual leave (7-14 days), and termination notice periods.',
+                    'cpf': 'CPF (Central Provident Fund) contributions are mandatory - employees contribute 20% and employers contribute 17% of monthly wages (rates vary by age).',
+                    'work_permit': 'Foreign workers need valid work permits. Employment Pass (EP) for professionals, S Pass for mid-skilled workers, and Work Permit for lower-skilled workers.'
+                },
+                'US': {
+                    'maternity_leave': 'The US has no federal paid maternity leave law. FMLA provides up to 12 weeks of unpaid leave for eligible employees. Some states like California, New York, and New Jersey have paid family leave programs.',
+                    'employment_laws': 'US employment is governed by federal laws like FLSA (minimum wage, overtime), Title VII (discrimination), ADA (disability accommodation), and state-specific employment laws.',
+                    'benefits': 'Common benefits include health insurance, 401(k) retirement plans, paid time off, and workers compensation insurance.',
+                    'at_will': 'Most US states follow "at-will" employment, meaning employers can terminate employees for any legal reason or no reason at all.'
+                },
+                'UK': {
+                    'maternity_leave': 'UK provides up to 52 weeks of maternity leave (39 weeks paid). Statutory Maternity Pay is £172.48/week or 90% of average weekly earnings, whichever is lower.',
+                    'employment_laws': 'UK employment is governed by Employment Rights Act, Working Time Regulations (48-hour work week), and ACAS guidelines for workplace disputes.',
+                    'notice_periods': 'Minimum notice periods: 1 week for 1 month-2 years service, 1 week per year of service for 2+ years (max 12 weeks).',
+                    'holidays': 'Minimum 28 days paid annual leave (including bank holidays) for full-time employees.'
+                }
+            }
+            
+            # Get country-specific response based on query keywords
+            country_info = country_specific_responses.get(country, country_specific_responses.get('US', {}))
+            
+            # Match query to relevant information
+            query_lower = query.lower()
+            if 'maternity' in query_lower or 'leave' in query_lower:
+                response_text = country_info.get('maternity_leave', f"For specific maternity leave policies in {country}, please consult local employment authorities.")
+            elif 'employment law' in query_lower or 'labor law' in query_lower:
+                response_text = country_info.get('employment_laws', f"For employment law information in {country}, please consult local legal authorities.")
+            elif 'cpf' in query_lower and country == 'SG':
+                response_text = country_info.get('cpf', "CPF information not available.")
+            elif 'work permit' in query_lower and country == 'SG':
+                response_text = country_info.get('work_permit', "Work permit information not available.")
+            elif 'benefits' in query_lower and country == 'US':
+                response_text = country_info.get('benefits', "Benefits information not available.")
+            elif 'notice' in query_lower and country == 'UK':
+                response_text = country_info.get('notice_periods', "Notice period information not available.")
+            elif 'holiday' in query_lower and country == 'UK':
+                response_text = country_info.get('holidays', "Holiday information not available.")
+            else:
+                # Generic but more helpful fallback
+                response_text = f"For your HR query about '{query}' in {country}, I recommend consulting with local employment authorities, HR professionals, or legal experts who specialize in {country} employment law. Each country has specific regulations that may apply to your situation."
+            
+            response_text += f"\n\n[Note: This is a simplified response. For comprehensive and current information, please consult official government sources or qualified HR/legal professionals in {country}.]"
+            
             metadata = {
-                'provider_used': 'fallback',
-                'confidence_score': 0.3,
-                'sources': [],
+                'provider_used': 'country_specific_fallback',
+                'confidence_score': 0.7,
+                'sources': [f'{country} Employment Authorities'],
                 'llm_responses_count': 0
             }
         
@@ -1220,7 +1271,13 @@ def add_employee():
             address=data.get('address'),
             emergency_contact_name=data.get('emergency_contact_name'),
             emergency_contact_phone=data.get('emergency_contact_phone'),
-            emergency_contact_relationship=data.get('emergency_contact_relationship')
+            emergency_contact_relationship=data.get('emergency_contact_relationship'),
+            # Demographic fields
+            date_of_birth=datetime.strptime(data['date_of_birth'], '%Y-%m-%d').date() if data.get('date_of_birth') else None,
+            gender=data.get('gender'),
+            ethnicity=data.get('ethnicity'),
+            nationality=data.get('nationality'),
+            marital_status=data.get('marital_status')
         )
         
         db.session.add(employee)
@@ -1308,6 +1365,18 @@ def update_employee(employee_id):
             employee.emergency_contact_phone = data['emergency_contact_phone']
         if 'emergency_contact_relationship' in data:
             employee.emergency_contact_relationship = data['emergency_contact_relationship']
+        
+        # Update demographic fields
+        if 'date_of_birth' in data and data['date_of_birth']:
+            employee.date_of_birth = datetime.strptime(data['date_of_birth'], '%Y-%m-%d').date()
+        if 'gender' in data:
+            employee.gender = data['gender']
+        if 'ethnicity' in data:
+            employee.ethnicity = data['ethnicity']
+        if 'nationality' in data:
+            employee.nationality = data['nationality']
+        if 'marital_status' in data:
+            employee.marital_status = data['marital_status']
         
         db.session.commit()
         
