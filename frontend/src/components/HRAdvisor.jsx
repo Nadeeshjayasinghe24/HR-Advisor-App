@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { 
   Send, 
@@ -11,8 +10,7 @@ import {
   User, 
   Loader2, 
   FileText, 
-  Workflow,
-  Globe
+  Workflow
 } from 'lucide-react'
 import '../App.css'
 
@@ -26,30 +24,9 @@ const HRAdvisor = ({ token }) => {
     }
   ])
   const [inputValue, setInputValue] = useState('')
-  const [selectedCountry, setSelectedCountry] = useState('US')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const messagesEndRef = useRef(null)
-
-  const countries = [
-    { code: 'US', name: 'United States' },
-    { code: 'GB', name: 'United Kingdom' },
-    { code: 'SG', name: 'Singapore' },
-    { code: 'AU', name: 'Australia' },
-    { code: 'CA', name: 'Canada' },
-    { code: 'DE', name: 'Germany' },
-    { code: 'FR', name: 'France' },
-    { code: 'IN', name: 'India' },
-    { code: 'JP', name: 'Japan' }
-  ]
-
-  const quickQuestions = [
-    "What are the labor laws for employee termination?",
-    "How do I create an onboarding workflow?",
-    "What are the maternity leave policies?",
-    "Generate a performance review template",
-    "What are the overtime regulations?"
-  ]
 
   useEffect(() => {
     scrollToBottom()
@@ -66,8 +43,7 @@ const HRAdvisor = ({ token }) => {
       id: Date.now(),
       type: 'user',
       content: message,
-      timestamp: new Date().toISOString(),
-      country: selectedCountry
+      timestamp: new Date().toISOString()
     }
 
     setMessages(prev => [...prev, userMessage])
@@ -76,15 +52,14 @@ const HRAdvisor = ({ token }) => {
     setError('')
 
     try {
-      const response = await fetch(`https://hr-advisor-app.onrender.com/api/hr_advisor/query`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://hr-advisor-app.onrender.com'}/api/hr_advisor/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          query: message,
-          country: selectedCountry
+          query: message
         }),
       })
 
@@ -119,14 +94,13 @@ const HRAdvisor = ({ token }) => {
       id: Date.now(),
       type: 'user',
       content: `Generate a ${templateType} template`,
-      timestamp: new Date().toISOString(),
-      country: selectedCountry
+      timestamp: new Date().toISOString()
     }
 
     setMessages(prev => [...prev, userMessage])
 
     try {
-      const response = await fetch(`https://hr-advisor-app.onrender.com/api/hr_advisor/template`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://hr-advisor-app.onrender.com'}/api/hr_advisor/template`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,7 +108,6 @@ const HRAdvisor = ({ token }) => {
         },
         body: JSON.stringify({
           type: templateType,
-          country: selectedCountry,
           details: {}
         }),
       })
@@ -173,23 +146,6 @@ const HRAdvisor = ({ token }) => {
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">HR Advisor</h1>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Globe className="h-4 w-4 text-gray-500" />
-            <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {countries.map((country) => (
-                  <SelectItem key={country.code} value={country.code}>
-                    {country.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
       </div>
 
       {error && (
