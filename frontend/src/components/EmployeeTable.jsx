@@ -26,7 +26,7 @@ import {
   Building
 } from 'lucide-react'
 
-const EmployeeTable = () => {
+const EmployeeTable = ({ token }) => {
   const [employees, setEmployees] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -74,10 +74,10 @@ const EmployeeTable = () => {
 
   const fetchEmployees = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const authToken = token || localStorage.getItem('token')
       const response = await fetch('https://hr-advisor-app.onrender.com/api/employees', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${authToken}`
         }
       })
 
@@ -189,7 +189,7 @@ const EmployeeTable = () => {
     setLoading(true)
 
     try {
-      const token = localStorage.getItem('token')
+      const authToken = token || localStorage.getItem('token')
       const url = editingEmployee 
         ? `https://hr-advisor-app.onrender.com/api/employees/${editingEmployee.employee_id}`
         : 'https://hr-advisor-app.onrender.com/api/employees'
@@ -200,7 +200,7 @@ const EmployeeTable = () => {
         method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify(formData)
       })
@@ -246,11 +246,11 @@ const EmployeeTable = () => {
     }
 
     try {
-      const token = localStorage.getItem('token')
+      const authToken = token || localStorage.getItem('token')
       const response = await fetch(`https://hr-advisor-app.onrender.com/api/employees/${employeeId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${authToken}`
         }
       })
 
