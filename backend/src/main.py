@@ -1178,8 +1178,9 @@ def add_employee():
             salary=float(data['salary']) if data.get('salary') else None,
             status=data.get('status', 'active'),
             address=data.get('address'),
-            emergency_contact=data.get('emergency_contact'),
-            emergency_phone=data.get('emergency_phone')
+            emergency_contact_name=data.get('emergency_contact_name'),
+            emergency_contact_phone=data.get('emergency_contact_phone'),
+            emergency_contact_relationship=data.get('emergency_contact_relationship')
         )
         
         db.session.add(employee)
@@ -1261,10 +1262,12 @@ def update_employee(employee_id):
             employee.status = data['status']
         if 'address' in data:
             employee.address = data['address']
-        if 'emergency_contact' in data:
-            employee.emergency_contact = data['emergency_contact']
-        if 'emergency_phone' in data:
-            employee.emergency_phone = data['emergency_phone']
+        if 'emergency_contact_name' in data:
+            employee.emergency_contact_name = data['emergency_contact_name']
+        if 'emergency_contact_phone' in data:
+            employee.emergency_contact_phone = data['emergency_contact_phone']
+        if 'emergency_contact_relationship' in data:
+            employee.emergency_contact_relationship = data['emergency_contact_relationship']
         
         db.session.commit()
         
