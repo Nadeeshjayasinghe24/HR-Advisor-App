@@ -273,8 +273,8 @@ def get_frontend_url():
             parsed = urlparse(referer)
             return f"{parsed.scheme}://{parsed.netloc}"
     
-    # Fallback to known working URL (can be updated as needed)
-    return "https://hr-advisor-app-otaq.vercel.app"
+    # Fallback to current working URL (updated for latest deployment)
+    return "https://hr-advisor-app-s4lo.vercel.app"
 
 def get_redirect_url(verification_status):
     """
