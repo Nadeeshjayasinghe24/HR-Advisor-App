@@ -876,56 +876,27 @@ def hr_advisor_query():
         if not query:
             return jsonify({'error': 'Query is required'}), 400
         
-        # Intelligent country detection from query
-        def detect_country_from_query(query_text):
-            query_lower = query_text.lower()
-            
-            # Country detection patterns
-            country_patterns = {
-                'SG': ['singapore', 'sg', 'singaporean'],
-                'US': ['united states', 'usa', 'us', 'america', 'american'],
-                'UK': ['united kingdom', 'uk', 'britain', 'british', 'england', 'english'],
-                'AU': ['australia', 'australian', 'au', 'aussie'],
-                'CA': ['canada', 'canadian', 'ca'],
-                'DE': ['germany', 'german', 'deutschland'],
-                'FR': ['france', 'french', 'fr'],
-                'IN': ['india', 'indian'],
-                'JP': ['japan', 'japanese'],
-                'CN': ['china', 'chinese'],
-                'MY': ['malaysia', 'malaysian'],
-                'TH': ['thailand', 'thai'],
-                'PH': ['philippines', 'philippine', 'filipino'],
-                'ID': ['indonesia', 'indonesian'],
-                'VN': ['vietnam', 'vietnamese'],
-                'NZ': ['new zealand', 'nz', 'kiwi']
-            }
-            
-            # Check for country mentions
-            for country_code, patterns in country_patterns.items():
-                for pattern in patterns:
-                    if pattern in query_lower:
-                        return country_code
-            
-            return None
+           # Enhanced country detection using the new CountryDetector
+        detected_country, confidence, metadata = country_detector.detect_country_from_query(query)
         
-        # Detect country from query
-        detected_country = detect_country_from_query(query)
-        
-        # If no country detected, ask for clarification
-        if not detected_country:
+        # If no country detected or confidence is too low, ask for clarification
+        if not detected_country or confidence < 0.6 or metadata.get('requires_clarification'):
+            clarification_response = country_detector.generate_clarification_response(
+                query, detected_country, confidence, metadata
+            )
             return jsonify({
-                'response': f"I'd be happy to help with your question: \"{query}\"\n\nHowever, employment laws vary significantly by country. Could you please specify which country you're asking about?\n\nFor example:\n• \"What is the maternity leave policy in Singapore?\"\n• \"Tell me about overtime laws in the United States\"\n• \"What are the notice periods in the United Kingdom?\"\n\nThis will help me provide you with accurate, country-specific information.",
+                'response': clarification_response,
                 'country_context': 'clarification_needed',
                 'coins_consumed': 0,
                 'metadata': {
-                    'provider_used': 'country_clarification',
-                    'confidence_score': 1.0,
+                    'provider_used': 'enhanced_country_clarification',
+                    'confidence_score': confidence,
+                    'detection_metadata': metadata,
                     'sources': ['HR Advisor System'],
                     'llm_responses_count': 0
                 }
             })
-        
-        country = detected_country
+
         
         # Check if user has enough coins
         if user.coins < 1:
