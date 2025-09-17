@@ -97,9 +97,11 @@ const Login = ({ onLogin }) => {
           localStorage.setItem('user', JSON.stringify(data.user))
           onLogin(data.user, data.access_token)
         } else {
-          // Registration successful - show verification email message
-          setSuccess(`Registration successful! A verification email has been sent to ${formData.email}. Please check your email (including spam folder) and click the verification link to activate your account.`)
+          // Registration successful - account is auto-verified for POC
+          setSuccess(`Registration successful! Your account is ready to use. You can now sign in with your credentials.`)
           setFormData({ email: '', password: '', confirmPassword: '' })
+          // Auto-switch to login mode for convenience
+          setTimeout(() => setIsLogin(true), 2000)
         }
       } else {
         setError(data.error || 'An error occurred')

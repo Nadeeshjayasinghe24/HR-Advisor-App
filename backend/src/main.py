@@ -396,11 +396,11 @@ def register():
         # Get frontend URL from request context for later use
         frontend_url = get_frontend_url()
         
-        # Create new user (unverified)
+        # Create new user (auto-verified for POC - TODO: Re-enable email verification for production)
         user = User(
             email=data['email'],
             password_hash=generate_password_hash(data['password']),
-            email_verified=False,
+            email_verified=True,  # Auto-verify for POC
             verification_token=verification_token,
             verification_sent_at=datetime.utcnow()
         )
@@ -408,16 +408,16 @@ def register():
         db.session.add(user)
         db.session.commit()
         
-        # Send verification email (simplified for now)
-        try:
-            send_verification_email(user.email, verification_token, frontend_url)
-        except Exception as e:
-            print(f"Failed to send verification email: {str(e)}")
-            # Don't fail registration if email fails
+        # Send verification email (DISABLED for POC - TODO: Re-enable for production)
+        # try:
+        #     send_verification_email(user.email, verification_token, frontend_url)
+        # except Exception as e:
+        #     print(f"Failed to send verification email: {str(e)}")
+        #     # Don't fail registration if email fails
         
         return jsonify({
-            'message': 'Registration successful! Please check your email to verify your account.',
-            'email_sent': True,
+            'message': 'Registration successful! Your account is ready to use.',
+            'email_sent': False,  # Disabled for POC
             'user_id': user.user_id
         }), 201
         
