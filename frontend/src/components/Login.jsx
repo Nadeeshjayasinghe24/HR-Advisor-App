@@ -16,6 +16,7 @@ const Login = ({ onLogin }) => {
   const [success, setSuccess] = useState('')
   const [formData, setFormData] = useState({
     email: '',
+    first_name: '',
     password: '',
     confirmPassword: ''
   })
@@ -99,7 +100,7 @@ const Login = ({ onLogin }) => {
         } else {
           // Registration successful - account is auto-verified for POC
           setSuccess(`Registration successful! Your account is ready to use. You can now sign in with your credentials.`)
-          setFormData({ email: '', password: '', confirmPassword: '' })
+          setFormData({ email: '', first_name: '', password: '', confirmPassword: '' })
           // Auto-switch to login mode for convenience
           setTimeout(() => setIsLogin(true), 2000)
         }
@@ -271,7 +272,7 @@ const Login = ({ onLogin }) => {
                       setShowForgotPassword(false)
                       setError('')
                       setSuccess('')
-                      setFormData({ email: '', password: '', confirmPassword: '' })
+                      setFormData({ email: '', first_name: '', password: '', confirmPassword: '' })
                     }}
                   >
                     Back to Sign In
@@ -281,6 +282,20 @@ const Login = ({ onLogin }) => {
             ) : (
               // Login/Signup Form
               <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
+                  <div>
+                    <Label htmlFor="first_name">First Name</Label>
+                    <Input
+                      id="first_name"
+                      name="first_name"
+                      type="text"
+                      value={formData.first_name}
+                      onChange={handleInputChange}
+                      placeholder="Enter your first name"
+                    />
+                  </div>
+                )}
+                
                 <div>
                   <Label htmlFor="email">Email address</Label>
                   <Input
@@ -394,7 +409,7 @@ const Login = ({ onLogin }) => {
                 onClick={() => {
                   setIsLogin(!isLogin)
                   setError('')
-                  setFormData({ username: '', email: '', password: '', confirmPassword: '' })
+                  setFormData({ email: '', first_name: '', password: '', confirmPassword: '' })
                 }}
               >
                 {isLogin 

@@ -574,24 +574,59 @@ const EmployeeTable = ({ token }) => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="ethnicity">Ethnicity</Label>
-                        <Input
-                          id="ethnicity"
-                          name="ethnicity"
-                          value={formData.ethnicity}
-                          onChange={handleInputChange}
-                          placeholder="e.g., Asian, Hispanic, Caucasian"
-                        />
+                        <Select value={formData.ethnicity} onValueChange={(value) => handleInputChange({ target: { name: 'ethnicity', value } })}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select ethnicity" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Asian">Asian</SelectItem>
+                            <SelectItem value="Black or African American">Black or African American</SelectItem>
+                            <SelectItem value="Hispanic or Latino">Hispanic or Latino</SelectItem>
+                            <SelectItem value="White or Caucasian">White or Caucasian</SelectItem>
+                            <SelectItem value="Native American">Native American</SelectItem>
+                            <SelectItem value="Pacific Islander">Pacific Islander</SelectItem>
+                            <SelectItem value="Middle Eastern">Middle Eastern</SelectItem>
+                            <SelectItem value="Mixed Race">Mixed Race</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                            <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       
                       <div>
                         <Label htmlFor="nationality">Nationality</Label>
-                        <Input
-                          id="nationality"
-                          name="nationality"
-                          value={formData.nationality}
-                          onChange={handleInputChange}
-                          placeholder="e.g., American, British, Singaporean"
-                        />
+                        <Select value={formData.nationality} onValueChange={(value) => handleInputChange({ target: { name: 'nationality', value } })}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select nationality" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="American">American</SelectItem>
+                            <SelectItem value="British">British</SelectItem>
+                            <SelectItem value="Singaporean">Singaporean</SelectItem>
+                            <SelectItem value="Australian">Australian</SelectItem>
+                            <SelectItem value="Canadian">Canadian</SelectItem>
+                            <SelectItem value="German">German</SelectItem>
+                            <SelectItem value="French">French</SelectItem>
+                            <SelectItem value="Japanese">Japanese</SelectItem>
+                            <SelectItem value="Chinese">Chinese</SelectItem>
+                            <SelectItem value="Indian">Indian</SelectItem>
+                            <SelectItem value="Malaysian">Malaysian</SelectItem>
+                            <SelectItem value="Thai">Thai</SelectItem>
+                            <SelectItem value="Filipino">Filipino</SelectItem>
+                            <SelectItem value="Indonesian">Indonesian</SelectItem>
+                            <SelectItem value="Vietnamese">Vietnamese</SelectItem>
+                            <SelectItem value="Korean">Korean</SelectItem>
+                            <SelectItem value="Mexican">Mexican</SelectItem>
+                            <SelectItem value="Brazilian">Brazilian</SelectItem>
+                            <SelectItem value="Italian">Italian</SelectItem>
+                            <SelectItem value="Spanish">Spanish</SelectItem>
+                            <SelectItem value="Dutch">Dutch</SelectItem>
+                            <SelectItem value="Swedish">Swedish</SelectItem>
+                            <SelectItem value="Norwegian">Norwegian</SelectItem>
+                            <SelectItem value="Danish">Danish</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                     

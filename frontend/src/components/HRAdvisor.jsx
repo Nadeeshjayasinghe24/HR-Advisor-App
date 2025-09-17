@@ -28,6 +28,18 @@ const HRAdvisor = ({ token }) => {
   const [error, setError] = useState('')
   const messagesEndRef = useRef(null)
 
+  // Quick questions for easy access
+  const quickQuestions = [
+    "What is the maternity leave policy in Singapore?",
+    "How many vacation days are required by law in the US?",
+    "What are the overtime regulations in the UK?",
+    "How to handle employee termination properly?",
+    "What documents are needed for new employee onboarding?",
+    "How to conduct performance reviews effectively?",
+    "What are the requirements for workplace safety training?",
+    "How to handle employee complaints and grievances?"
+  ]
+
   useEffect(() => {
     scrollToBottom()
   }, [messages])

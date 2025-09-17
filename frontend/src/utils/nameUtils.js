@@ -1,10 +1,21 @@
 // Creative name extraction and welcome message utilities
 
 /**
- * Extracts the first name from various username formats
+ * Extracts the first name from user object or username formats
+ * Prioritizes user.first_name, falls back to extraction from username/email
  * Handles: "John Doe", "john.doe", "john_doe", "johnDoe", "john", etc.
  */
-export const extractFirstName = (username) => {
+export const extractFirstName = (userOrUsername) => {
+  // If it's a user object with first_name, use that
+  if (userOrUsername && typeof userOrUsername === 'object' && userOrUsername.first_name) {
+    return userOrUsername.first_name
+  }
+  
+  // Extract username string from user object or use directly
+  const username = typeof userOrUsername === 'object' 
+    ? (userOrUsername.username || userOrUsername.email) 
+    : userOrUsername
+    
   if (!username) return 'Friend'
   
   // Remove common email domains if present

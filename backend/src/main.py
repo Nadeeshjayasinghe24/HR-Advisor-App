@@ -116,6 +116,7 @@ class User(db.Model):
     __tablename__ = 'user'
     user_id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     email = db.Column(db.String(120), unique=True, nullable=False)
+    first_name = db.Column(db.String(50), nullable=True)  # Added for personalized experience
     password_hash = db.Column(db.String(128), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     coins = db.Column(db.Integer, default=100)
@@ -142,6 +143,7 @@ class User(db.Model):
         return {
             'user_id': self.user_id,
             'email': self.email,
+            'first_name': self.first_name,
             'email_verified': self.email_verified,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'coins': self.coins,
@@ -399,6 +401,7 @@ def register():
         # Create new user (auto-verified for POC - TODO: Re-enable email verification for production)
         user = User(
             email=data['email'],
+            first_name=data.get('first_name'),  # Optional first name for personalization
             password_hash=generate_password_hash(data['password']),
             email_verified=True,  # Auto-verify for POC
             verification_token=verification_token,
