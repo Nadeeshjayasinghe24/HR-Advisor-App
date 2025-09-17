@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import DailyTips from './DailyTips'
 import { getContextualWelcome, getMotivationalMessage, extractFirstName } from '../utils/nameUtils'
 import { 
   Users, 
@@ -146,18 +145,16 @@ const Dashboard = ({ onPageChange, token, user }) => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Subscription</CardTitle>
+            <CardTitle className="text-sm font-medium">Coins Remaining</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold capitalize">
-              {stats.subscription?.plan_type?.replace('_', ' ') || 'Free'}
+            <div className="text-2xl font-bold">
+              {stats.subscription?.coins_balance || 0}/100
             </div>
-            {stats.subscription?.plan_type === 'free_trial' && (
-              <p className="text-xs text-muted-foreground">
-                {stats.subscription.coins_balance} coins remaining
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground">
+              HR Advisor queries
+            </p>
           </CardContent>
         </Card>
 
@@ -241,10 +238,62 @@ const Dashboard = ({ onPageChange, token, user }) => {
           </CardContent>
         </Card>
 
-      {/* Daily Tips Section */}
+      {/* Getting Started Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <DailyTips />
+          <Card>
+          <CardHeader>
+            <CardTitle>Getting Started</CardTitle>
+            <CardDescription>
+              Quick tips to make the most of your HR platform
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-medium text-blue-600">1</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">Add your team</h4>
+                  <p className="text-sm text-gray-500">
+                    Start by adding employee information to get personalized advice
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-medium text-blue-600">2</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">Ask HR questions</h4>
+                  <p className="text-sm text-gray-500">
+                    Get instant answers to HR policies, compliance, and best practices
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-medium text-blue-600">3</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">Manage workflows</h4>
+                  <p className="text-sm text-gray-500">
+                    Create and track HR processes and compliance
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
         </div>
         
         <Card>

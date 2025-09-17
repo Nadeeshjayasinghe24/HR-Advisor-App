@@ -59,6 +59,9 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
             <div className="text-sm text-muted-foreground mt-1">
               {user?.email}
             </div>
+            <div className="text-xs text-primary mt-2 font-medium">
+              Free Plan
+            </div>
           </div>
           
           {/* Navigation */}
@@ -147,6 +150,9 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
                   {user?.email}
+                </div>
+                <div className="text-xs text-primary mt-2 font-medium">
+                  Free Plan
                 </div>
               </div>
               
