@@ -130,7 +130,7 @@ function App() {
       <div>
         {verificationMessage && (
           <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md">
-            <Alert variant={verificationStatus === 'error' ? 'destructive' : 'default'}>
+            <Alert variant={verificationStatus === 'error' ? 'destructive' : 'default'} className="mb-4">
               <AlertDescription className={verificationStatus === 'success' ? 'text-green-600' : ''}>
                 {verificationMessage}
               </AlertDescription>
@@ -166,4 +166,5 @@ function App() {
 }
 
 export default App
+
 

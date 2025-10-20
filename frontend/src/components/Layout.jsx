@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import {
-  Home,
-  Users,
-  MessageSquare,
-  FileText,
-  Settings,
+import { 
+  Home, 
+  Users, 
+  MessageSquare, 
+  FileText, 
+  Settings, 
   LogOut,
   Menu,
   X
@@ -13,7 +13,7 @@ import {
 
 const Layout = ({ children, onLogout, user }) => {
   const location = useLocation()
-  const [isMobileMenuOpen, setIsMobileMenuMenuOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
@@ -192,4 +192,3 @@ const Layout = ({ children, onLogout, user }) => {
 }
 
 export default Layout
-
