@@ -121,8 +121,10 @@ const Dashboard = ({ onPageChange, token, user }) => {
       
       if (historyResponse.ok) {
         const historyData = await historyResponse.json()
-        setRecentActivity(historyData.slice(0, 5))
-        setStats(prev => ({ ...prev, recentQueries: historyData.length }))
+        // Handle both array and object responses
+        const activities = Array.isArray(historyData) ? historyData : (historyData.data || [])
+        setRecentActivity(activities.slice(0, 5))
+        setStats(prev => ({ ...prev, recentQueries: activities.length }))
       }
 
       // Fetch employees (for count)
