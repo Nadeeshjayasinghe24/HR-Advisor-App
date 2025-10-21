@@ -2,20 +2,19 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { getContextualWelcome, getMotivationalMessage, extractFirstName } from '../utils/nameUtils'
 import { 
+  Search,
+  Bell,
   Users, 
   MessageSquare, 
   TrendingUp, 
   Clock,
   Plus,
-  ArrowRight,
-  Coins,
-  ChevronDown,
-  ChevronUp,
   Lightbulb,
-  Target,
-  Calendar
+  BarChart3,
+  Calendar,
+  ChevronRight,
+  Settings
 } from 'lucide-react'
 import '../App.css'
 
@@ -28,43 +27,75 @@ const Dashboard = ({ onPageChange, token, user }) => {
   })
   const [recentActivity, setRecentActivity] = useState([])
   const [loading, setLoading] = useState(true)
-  const [tipsCollapsed, setTipsCollapsed] = useState(false)
-  const [currentTip, setCurrentTip] = useState(0)
+  const [currentMonth, setCurrentMonth] = useState(new Date())
 
-  // Daily HR Tips
-  const dailyTips = [
+  const quickActions = [
     {
-      title: "Employee Recognition",
-      content: "Recognize achievements within 24 hours for maximum impact. A simple 'thank you' can boost productivity by 31%.",
-      category: "Best Practice"
+      id: 1,
+      title: 'Reflection time',
+      icon: Lightbulb,
+      color: 'bg-blue-500',
+      value: '2h 30m',
+      description: 'This week'
     },
     {
-      title: "One-on-One Meetings",
-      content: "Schedule regular 1:1s with direct reports. Aim for 30 minutes monthly to discuss goals, challenges, and career development.",
-      category: "Management"
+      id: 2,
+      title: 'Daily progress',
+      icon: TrendingUp,
+      color: 'bg-teal-500',
+      value: '82%',
+      description: 'This week'
     },
     {
-      title: "Team Building Activity",
-      content: "Try a 'Two Truths and a Lie' session during your next team meeting to help colleagues learn about each other.",
-      category: "Team Building"
+      id: 3,
+      title: 'FAQ',
+      icon: MessageSquare,
+      color: 'bg-purple-500',
+      value: '12',
+      description: 'Questions'
+    }
+  ]
+
+  const upcomingTasks = [
+    {
+      id: 1,
+      date: '05',
+      title: 'UI/UX workshop',
+      time: '8:00-12:00 sessions, Mrs. Wilson',
+      fullTime: '14:00-14:45'
     },
     {
-      title: "Performance Reviews",
-      content: "Use the STAR method (Situation, Task, Action, Result) when documenting performance examples for more effective reviews.",
-      category: "Performance"
+      id: 2,
+      date: '06',
+      title: 'Interaction design',
+      time: '8:00-12:00 sessions, Mrs. Wilson',
+      fullTime: '11:00-14:45'
     },
     {
-      title: "Workplace Wellness",
-      content: "Encourage micro-breaks every 90 minutes. Even a 2-minute walk can improve focus and reduce stress.",
-      category: "Wellness"
+      id: 3,
+      date: '07',
+      title: 'Team Meeting',
+      time: '8:00-12:00 meetings, Design team',
+      fullTime: '12:00-13:35'
+    },
+    {
+      id: 4,
+      date: '08',
+      title: 'User Interview',
+      time: '8:00-12:00 sessions, Design team',
+      fullTime: '16:00-17:00'
+    },
+    {
+      id: 5,
+      date: '09',
+      title: 'User Interview',
+      time: '8:00-12:00 sessions, Design team',
+      fullTime: '16:00-17:00'
     }
   ]
 
   useEffect(() => {
     fetchDashboardData()
-    // Rotate tips daily
-    const today = new Date().getDate()
-    setCurrentTip(today % dailyTips.length)
   }, [])
 
   const fetchDashboardData = async () => {
@@ -74,7 +105,7 @@ const Dashboard = ({ onPageChange, token, user }) => {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
-      } )
+      })
       
       if (subResponse.ok) {
         const subData = await subResponse.json()
@@ -86,7 +117,7 @@ const Dashboard = ({ onPageChange, token, user }) => {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
-      } )
+      })
       
       if (historyResponse.ok) {
         const historyData = await historyResponse.json()
@@ -99,14 +130,14 @@ const Dashboard = ({ onPageChange, token, user }) => {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
-      } )
+      })
       
       if (empResponse.ok) {
         const empData = await empResponse.json()
         setStats(prev => ({ 
           ...prev, 
           totalEmployees: empData.total || 0,
-          activeEmployees: empData.total || 0 // Simplified for now
+          activeEmployees: empData.total || 0
         }))
       }
 
@@ -117,13 +148,34 @@ const Dashboard = ({ onPageChange, token, user }) => {
     }
   }
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+  const getDaysInMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+  }
+
+  const getFirstDayOfMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay()
+  }
+
+  const renderCalendar = () => {
+    const daysInMonth = getDaysInMonth(currentMonth)
+    const firstDay = getFirstDayOfMonth(currentMonth)
+    const days = []
+    
+    // Empty cells for days before month starts
+    for (let i = 0; i < firstDay; i++) {
+      days.push(<div key={`empty-${i}`} className="text-center py-2"></div>)
+    }
+    
+    // Days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(
+        <div key={day} className="text-center py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded cursor-pointer">
+          {day}
+        </div>
+      )
+    }
+    
+    return days
   }
 
   if (loading) {
@@ -131,8 +183,8 @@ const Dashboard = ({ onPageChange, token, user }) => {
       <div className="space-y-6">
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
               <div key={i} className="h-32 bg-gray-200 rounded"></div>
             ))}
           </div>
@@ -143,260 +195,198 @@ const Dashboard = ({ onPageChange, token, user }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header with User Info */}
-      <div className="flex justify-between items-start">
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">
-            {getContextualWelcome(user?.username, 'dashboard')}
+      {/* Header Section */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Good morning, {user?.first_name || 'User'}
           </h1>
-          <p className="text-gray-600 mt-1">{getMotivationalMessage(user?.username)}</p>
+          <p className="text-gray-600 mt-1">
+            Your personal dashboard to manage HR and growth knowledge.
+          </p>
         </div>
-        
-        {/* User Profile Area with Subscription */}
-        <div className="flex items-center space-x-4">
-          <div className="text-right">
-            <p className="text-sm font-medium text-gray-900">
-              {user?.first_name || extractFirstName(user?.username) || 'User'}
-            </p>
-            <p className="text-xs text-gray-500">
-              {stats.subscription?.subscription_type || 'Free'} Plan
-            </p>
-          </div>
-          <Button onClick={() => onPageChange('hr-advisor')} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg">
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Ask HR Advisor
-          </Button>
-        </div>
+        <Button variant="outline" className="border-blue-500 text-blue-600 hover:bg-blue-50">
+          Account settings
+        </Button>
       </div>
 
-      {/* Daily Tips Section - Collapsible */}
-      {!tipsCollapsed && (
-        <Card className="border-l-4 border-l-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Lightbulb className="h-5 w-5 text-blue-600" />
-                <CardTitle className="text-lg text-blue-900">Daily HR Tip</CardTitle>
-                <Badge variant="secondary" className="text-xs">
-                  {dailyTips[currentTip].category}
-                </Badge>
+      {/* Quick Actions Section */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick action</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {quickActions.map((action) => {
+            const Icon = action.icon
+            return (
+              <div key={action.id} className={`${action.color} rounded-lg p-6 text-white cursor-pointer hover:shadow-lg transition-shadow`}>
+                <div className="flex items-start justify-between mb-8">
+                  <div className="bg-white bg-opacity-20 p-3 rounded-lg">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold mb-1">{action.value}</p>
+                  <p className="text-sm text-white text-opacity-90">{action.description}</p>
+                </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setTipsCollapsed(true)}
-                className="text-blue-600 hover:text-blue-800"
-              >
-                <ChevronUp className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <h4 className="font-medium text-blue-900 mb-2">{dailyTips[currentTip].title}</h4>
-            <p className="text-blue-800 text-sm">{dailyTips[currentTip].content}</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Collapsed Tips Button */}
-      {tipsCollapsed && (
-        <Button
-          variant="outline"
-          onClick={() => setTipsCollapsed(false)}
-          className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
-        >
-          <Lightbulb className="mr-2 h-4 w-4" />
-          Show Daily HR Tip
-          <ChevronDown className="ml-2 h-4 w-4" />
-        </Button>
-      )}
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalEmployees}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.activeEmployees} active
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Recent Queries</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.recentQueries}</div>
-            <p className="text-xs text-muted-foreground">
-              Last 10 interactions
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">AI Coins</CardTitle>
-            <Coins className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">
-              {stats.subscription?.coins_balance || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              HR Advisor queries remaining
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Quick Actions</CardTitle>
-            <Plus className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start"
-                onClick={() => onPageChange('employees')}
-              >
-                <Users className="mr-2 h-3 w-3" />
-                Add Employee
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            )
+          })}
+        </div>
       </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Activity - Takes 2 columns */}
-        <div className="lg:col-span-2">
+        {/* My Tasks Section */}
+        <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Recent HR Queries</CardTitle>
-              <CardDescription>
-                Your latest interactions with the HR Advisor
-              </CardDescription>
+              <CardTitle className="text-lg">My tasks</CardTitle>
+              <CardDescription>2 out of 5 tasks</CardDescription>
             </CardHeader>
-            <CardContent>
-              {recentActivity.length > 0 ? (
-                <div className="space-y-4">
-                  {recentActivity.map((activity) => (
-                    <div key={activity.prompt_id} className="flex items-start space-x-3">
-                      <div className="flex-shrink-0">
-                        <MessageSquare className="h-5 w-5 text-blue-500" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-900 truncate">
-                          {activity.prompt_text}
-                        </p>
-                        <div className="flex items-center mt-1 space-x-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {activity.country_context || 'General'}
-                          </Badge>
-                          <span className="text-xs text-gray-500">
-                            {formatDate(activity.timestamp)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => onPageChange('history')}
-                  >
-                    View All History
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+            <CardContent className="space-y-3">
+              {[
+                { name: 'Admira', task: 'Interview with developer', status: 'Due today' },
+                { name: 'Admira', task: 'Reflection time', status: 'Tomorrow' },
+                { name: 'Admira', task: 'Sprint questions preparation', status: 'Due today' }
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-start space-x-3 pb-3 border-b last:border-b-0">
+                  <div className="w-8 h-8 rounded-full bg-gray-300 flex-shrink-0"></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900">{item.name}</p>
+                    <p className="text-xs text-gray-600">{item.task}</p>
+                    <p className={`text-xs mt-1 ${item.status === 'Due today' ? 'text-red-600' : 'text-orange-600'}`}>
+                      {item.status}
+                    </p>
+                  </div>
                 </div>
-              ) : (
-                <div className="text-center py-6">
-                  <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-sm font-medium text-gray-900">No queries yet</h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Start by asking the HR Advisor a question
-                  </p>
-                  <Button 
-                    className="mt-4"
-                    onClick={() => onPageChange('hr-advisor')}
-                  >
-                    Ask a Question
-                  </Button>
-                </div>
-              )}
+              ))}
+              <button className="text-blue-600 text-sm font-medium mt-2 hover:text-blue-700">
+                See all tasks
+              </button>
             </CardContent>
           </Card>
         </div>
 
-        {/* Getting Started Guide - Single column */}
+        {/* Calendar and Upcoming Tasks */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Calendar */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>December 2023</CardTitle>
+                <div className="flex space-x-2">
+                  <button className="text-gray-400 hover:text-gray-600">←</button>
+                  <button className="text-gray-400 hover:text-gray-600">→</button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-7 gap-2 mb-4">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="text-center text-xs font-semibold text-gray-600 py-2">
+                    {day}
+                  </div>
+                ))}
+                {renderCalendar()}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Upcoming Calendar Tasks */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Upcoming calendar tasks</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {upcomingTasks.map((task) => (
+                <div key={task.id} className="flex items-start space-x-4 pb-3 border-b last:border-b-0">
+                  <div className="text-center">
+                    <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center">
+                      <span className="text-sm font-semibold text-blue-600">{task.date}</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900">{task.title}</p>
+                    <p className="text-xs text-gray-600 mt-1">{task.time}</p>
+                  </div>
+                  <div className="text-right text-xs text-gray-500 flex-shrink-0">
+                    {task.fullTime}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Bottom Section - Next Retrospective, Sprint, and Chart */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Next Retrospective */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <Target className="mr-2 h-5 w-5" />
-              Getting Started
-            </CardTitle>
-            <CardDescription>
-              Quick tips to make the most of your HR platform
-            </CardDescription>
+            <CardTitle className="text-sm">Next retrospective</CardTitle>
+            <CardDescription>Week 2</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-medium text-blue-600">1</span>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium">Add your team</h4>
-                  <p className="text-sm text-gray-500">
-                    Start by adding employee information to get personalized advice
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-medium text-blue-600">2</span>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium">Ask HR questions</h4>
-                  <p className="text-sm text-gray-500">
-                    Get instant answers to HR policies, compliance, and best practices
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-medium text-blue-600">3</span>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium">Manage workflows</h4>
-                  <p className="text-sm text-gray-500">
-                    Create and track HR processes and compliance
-                  </p>
-                </div>
-              </div>
+            <div className="flex space-x-2">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="w-8 h-8 rounded-full bg-gray-300"></div>
+              ))}
+              <div className="text-xs text-gray-600 flex items-center ml-2">Design team</div>
             </div>
           </CardContent>
         </Card>
+
+        {/* Next Sprint */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Next sprint</CardTitle>
+            <CardDescription>Week 3</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex space-x-2">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="w-8 h-8 rounded-full bg-gray-300"></div>
+              ))}
+              <div className="text-xs text-gray-600 flex items-center ml-2">Design team</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Calendar Button */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Calendar</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+              <Calendar className="mr-2 h-4 w-4" />
+              View Calendar
+            </Button>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Total Working Hours Chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Total working hours</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-end justify-between h-48 space-x-2">
+            {[8, 6, 7, 5, 8, 6, 7, 8].map((hours, idx) => (
+              <div key={idx} className="flex-1 flex flex-col items-center">
+                <div className="w-full bg-gray-200 rounded-t" style={{ height: `${(hours / 8) * 100}%` }}>
+                  <div className="w-full h-1/2 bg-blue-500 rounded-t"></div>
+                </div>
+                <span className="text-xs text-gray-600 mt-2">Day {idx + 1}</span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
 
 export default Dashboard
+

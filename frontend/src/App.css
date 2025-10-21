@@ -1,101 +1,17 @@
-/* AnNi AI HR Advisor - Modern Colorful Design System */
+/* AnNi AI HR Advisor - Clean Design System */
 @import "tw-animate-css";
-
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-}
 
 :root {
   --radius: 0.75rem;
-  
-  /* AnNi Brand Colors - Extracted from logo */
-  --anni-pink: #E91E63;        /* Vibrant pink from logo */
-  --anni-orange: #FF9800;      /* Warm orange from logo */
-  --anni-yellow: #FFC107;      /* Bright yellow from logo */
-  --anni-magenta: #E91E63;     /* Deep magenta accent */
-  
-  /* Primary color scheme based on AnNi branding */
-  --primary: #E91E63;
-  --primary-foreground: #FFFFFF;
-  --secondary: #FF9800;
-  --secondary-foreground: #FFFFFF;
-  --accent: #FFC107;
-  --accent-foreground: #000000;
-  
-  /* Gradient combinations inspired by logo */
-  --gradient-primary: linear-gradient(135deg, #E91E63 0%, #FF9800 50%, #FFC107 100%);
-  --gradient-secondary: linear-gradient(45deg, #FF9800 0%, #FFC107 100%);
-  --gradient-accent: linear-gradient(135deg, #E91E63 0%, #E91E63 100%);
   
   /* Base colors */
   --background: #FAFAFA;
   --foreground: #212121;
   --card: #FFFFFF;
   --card-foreground: #212121;
-  --popover: #FFFFFF;
-  --popover-foreground: #212121;
+  --border: #E0E0E0;
   --muted: #F5F5F5;
   --muted-foreground: #757575;
-  --border: #E0E0E0;
-  --input: #FFFFFF;
-  --ring: #E91E63;
-  
-  /* Status colors with AnNi influence */
-  --destructive: #F44336;
-  --destructive-foreground: #FFFFFF;
-  
-  /* Chart colors using AnNi palette */
-  --chart-1: #E91E63;
-  --chart-2: #FF9800;
-  --chart-3: #FFC107;
-  --chart-4: #4CAF50;
-  --chart-5: #2196F3;
-  
-  /* Sidebar colors */
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #212121;
-  --sidebar-primary: #E91E63;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #FF9800;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #E0E0E0;
-  --sidebar-ring: #E91E63;
 }
 
 /* Global styles */
@@ -109,112 +25,10 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
-/* AnNi-specific component styles */
-.anni-gradient-bg {
-  background: var(--gradient-primary);
-}
-
-.anni-gradient-text {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.anni-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.1);
-  transition: all 0.2s ease;
-}
-
-.anni-card:hover {
-  box-shadow: 0 8px 32px rgba(233, 30, 99, 0.15);
-  transform: translateY(-2px);
-}
-
-.anni-button-primary {
-  background: var(--gradient-primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.75rem 1.5rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.anni-button-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(233, 30, 99, 0.3);
-}
-
-.anni-nav-item {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius);
-  transition: all 0.2s ease;
-  color: var(--foreground);
-  text-decoration: none;
-}
-
-.anni-nav-item:hover {
-  background: linear-gradient(135deg, rgba(233, 30, 99, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
-  color: var(--primary);
-}
-
-.anni-nav-item.active {
-  background: var(--gradient-primary);
-  color: white;
-}
-
-.anni-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: var(--primary);
-}
-
-.anni-welcome {
-  background: var(--gradient-secondary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 600;
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
-  .anni-card {
+  .card {
     margin: 0.5rem;
   }
-  
-  .anni-logo {
-    font-size: 1.1rem;
-  }
-}
-
-/* Animation utilities */
-@keyframes anni-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.anni-pulse {
-  animation: anni-pulse 2s infinite;
-}
-
-@keyframes anni-bounce {
-  0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
-  40%, 43% { transform: translateY(-8px); }
-  70% { transform: translateY(-4px); }
-  90% { transform: translateY(-2px); }
-}
-
-.anni-bounce {
-  animation: anni-bounce 1s ease-in-out;
 }
 
