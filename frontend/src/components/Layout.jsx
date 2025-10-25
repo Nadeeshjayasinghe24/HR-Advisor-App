@@ -4,7 +4,6 @@ import {
   Home, 
   Users, 
   MessageSquare, 
-  FileText, 
   Settings, 
   LogOut,
   Menu,
@@ -19,13 +18,12 @@ const Layout = ({ children, onLogout, user }) => {
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Employees', href: '/employees', icon: Users },
     { name: 'HR Advisor', href: '/hr-advisor', icon: MessageSquare },
-    { name: 'Reports', href: '/reports', icon: FileText },
     { name: 'Settings', href: '/settings', icon: Settings },
   ]
 
   const isActive = (path) => {
     if (path === '/') {
-      return location.pathname === '/'
+      return location.pathname === '/' || location.pathname === '/dashboard'
     }
     return location.pathname.startsWith(path)
   }
@@ -192,3 +190,4 @@ const Layout = ({ children, onLogout, user }) => {
 }
 
 export default Layout
+

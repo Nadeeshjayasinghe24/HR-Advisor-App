@@ -1,5 +1,8 @@
-/* AnNi AI HR Advisor - Clean Design System */
 @import "tw-animate-css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --radius: 0.75rem;

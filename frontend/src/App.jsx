@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
@@ -11,7 +12,6 @@ import './App.css'
 function App() {
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(null)
-  const [currentPage, setCurrentPage] = useState('dashboard')
   const [loading, setLoading] = useState(true)
   const [verificationMessage, setVerificationMessage] = useState(null)
   const [verificationStatus, setVerificationStatus] = useState(null)
@@ -65,7 +65,6 @@ function App() {
   const handleLogin = (userData, accessToken) => {
     setUser(userData)
     setToken(accessToken)
-    setCurrentPage('dashboard')
     // Clear verification message after successful login
     setVerificationMessage(null)
     setVerificationStatus(null)
@@ -76,7 +75,6 @@ function App() {
     localStorage.removeItem('user')
     setUser(null)
     setToken(null)
-    setCurrentPage('dashboard')
     // Clear verification message on logout
     setVerificationMessage(null)
     setVerificationStatus(null)
@@ -90,31 +88,6 @@ function App() {
   const handleUserUpdate = (updatedUser) => {
     setUser(updatedUser)
     localStorage.setItem('user', JSON.stringify(updatedUser))
-  }
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'dashboard':
-        return <Dashboard onPageChange={setCurrentPage} token={token} user={user} />
-      case 'hr-advisor':
-        return <HRAdvisor token={token} />
-      case 'employees':
-        return <EmployeeTable token={token} />
-      case 'history':
-        return <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-900">Prompt History</h2>
-          <p className="text-gray-600 mt-2">Coming soon...</p>
-        </div>
-      case 'subscription':
-        return <Subscription token={token} user={user} onUserUpdate={handleUserUpdate} />
-      case 'settings':
-        return <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-          <p className="text-gray-600 mt-2">Coming soon...</p>
-        </div>
-      default:
-        return <Dashboard onPageChange={setCurrentPage} token={token} user={user} />
-    }
   }
 
   if (loading) {
@@ -155,16 +128,32 @@ function App() {
 
   return (
     <Layout 
-      currentPage={currentPage} 
-      onPageChange={setCurrentPage}
       user={user}
       onLogout={handleLogout}
     >
-      {renderPage()}
+      <Routes>
+        <Route path="/" element={<Dashboard token={token} user={user} />} />
+        <Route path="/dashboard" element={<Dashboard token={token} user={user} />} />
+        <Route path="/hr-advisor" element={<HRAdvisor token={token} />} />
+        <Route path="/employees" element={<EmployeeTable token={token} />} />
+        <Route path="/history" element={
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-gray-900">Prompt History</h2>
+            <p className="text-gray-600 mt-2">Coming soon...</p>
+          </div>
+        } />
+        <Route path="/subscription" element={<Subscription token={token} user={user} onUserUpdate={handleUserUpdate} />} />
+        <Route path="/settings" element={
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
+            <p className="text-gray-600 mt-2">Coming soon...</p>
+          </div>
+        } />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </Layout>
   )
 }
 
 export default App
-
 
