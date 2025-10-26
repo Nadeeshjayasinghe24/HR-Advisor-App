@@ -18,6 +18,7 @@ from document_generation_agent import document_agent
 from ai_governance_agent import governance_agent
 from proactive_compliance_agent import compliance_agent
 from predictive_analytics_agent import predictive_agent
+from country_detection import country_detector
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
