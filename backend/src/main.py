@@ -18,7 +18,7 @@ from document_generation_agent import document_agent
 from ai_governance_agent import governance_agent
 from proactive_compliance_agent import compliance_agent
 from predictive_analytics_agent import predictive_agent
-from country_detection import country_detector
+from country_detection import CountryDetector
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
@@ -878,11 +878,11 @@ def hr_advisor_query():
             return jsonify({'error': 'Query is required'}), 400
         
            # Enhanced country detection using the new CountryDetector
-        detected_country, confidence, metadata = country_detector.detect_country_from_query(query)
+        detected_country, confidence, metadata = CountryDetector.detect_country_from_query(query)
         
         # If no country detected or confidence is too low, ask for clarification
         if not detected_country or confidence < 0.6 or metadata.get('requires_clarification'):
-            clarification_response = country_detector.generate_clarification_response(
+            clarification_response = CountryDetector.generate_clarification_response(
                 query, detected_country, confidence, metadata
             )
             return jsonify({
