@@ -34,7 +34,7 @@ def after_request(response):
     origin = request.headers.get('Origin')
     if origin:
         # Allow any hr-advisor-app Vercel deployment automatically
-        if re.match(r'^https://hr-advisor-app.*\.vercel\.app$', origin):
+        if re.match(r'^(https://hr-advisor-app.*\.vercel\.app|https://anni-hr-advisor\.netlify\.app)$', origin):
             response.headers['Access-Control-Allow-Origin'] = origin
             response.headers['Access-Control-Allow-Credentials'] = 'true'
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
@@ -55,7 +55,7 @@ def handle_preflight():
         response = make_response()
         if origin:
             # Allow any hr-advisor-app Vercel deployment automatically
-            if re.match(r'^https://hr-advisor-app.*\.vercel\.app$', origin):
+            if re.match(r'^(https://hr-advisor-app.*\.vercel\.app|https://anni-hr-advisor\.netlify\.app)$', origin):
                 response.headers['Access-Control-Allow-Origin'] = origin
                 response.headers['Access-Control-Allow-Credentials'] = 'true'
                 response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
